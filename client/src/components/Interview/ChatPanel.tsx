@@ -1,15 +1,14 @@
 import { Box, IconButton, Stack, Typography } from '@mui/material'
 import PanelLayout from '../layout/PanelLayout'
 import { useConversation } from '../../contexts/ConversationContext'
-import { useChat, useRoomContext } from '@livekit/components-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowDownward } from '@mui/icons-material'
 import MessageFormInput from './MessageFormInput'
+import { useUserContext } from '../../contexts/UserContext'
 
 function ChatPanel() {
     const { messages, setMessages } = useConversation()
-    const room = useRoomContext()
-    const { send: sendChat } = useChat()
+    const { user } = useUserContext()
 
     const messagesEnd = useRef<HTMLDivElement>(null)
     const messageContainer = useRef<HTMLDivElement>(null)
@@ -46,12 +45,10 @@ function ChatPanel() {
             if (!trimmedMessage) return
 
             try {
-                console.log(trimmedMessage)
-                await sendChat(trimmedMessage)
-
+                // Add message to local state (chat is local only now, no LiveKit)
                 const newMessage = {
                     id: crypto.randomUUID(),
-                    name: room.localParticipant?.identity || 'You',
+                    name: user?.username || 'You',
                     message: trimmedMessage,
                     timestamp: Date.now(),
                     isSelf: true
@@ -63,7 +60,7 @@ function ChatPanel() {
                 console.error('Error sending message:', error)
             }
         },
-        [room.localParticipant, sendChat, setMessages]
+        [user?.username, setMessages]
     )
 
     const renderedMessages = useMemo(

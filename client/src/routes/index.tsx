@@ -6,7 +6,7 @@ import UseCaseDetails from '../pages/UseCaseDetails'
 import Home from '../pages/Home'
 import PublicRoutes from './PublicRoutes'
 import PrivateRoutes from './PrivateRoutes'
-import Interview from '../pages/Interview'
+import Interview from '../pages/InterviewV2'
 import History from '../pages/History'
 import Notes from '../pages/Notes'
 import Profile from '../pages/Profile'
@@ -27,10 +27,10 @@ export const routes = [
             { path: '/', element: <Home /> },
             { path: '/usecases', element: <UseCaseList /> },
             { path: '/usecases/:id', element: <UseCaseDetails /> },
-            { path: '/interview/:id', element: <Interview />},
-            { path: '/history', element: <History />},
-            { path: '/notes', element: <Notes />},
-            { path: '/profile', element: <Profile />}
+            { path: '/interview/:id', element: <Interview /> },
+            { path: '/history', element: <History /> },
+            { path: '/notes', element: <Notes /> },
+            { path: '/profile', element: <Profile /> }
         ]
     }
 ]

@@ -1,74 +1,51 @@
 import { Box, Chip } from '@mui/material'
-import { useEffect, useRef, useState } from 'react'
-import { Track, TrackPublication } from 'livekit-client'
-import { useRoomContext } from '@livekit/components-react'
+import { useEffect, useRef } from 'react'
 import { useUserContext } from '../../contexts/UserContext'
+import { useMeetingContext } from '../../contexts/MeetingContext'
 
 function InterviewerView() {
     const videoRef = useRef<HTMLVideoElement>(null)
-    const room = useRoomContext()
-    const localParticipant = room?.localParticipant
-    const [track, setTrack] = useState<TrackPublication | null>(null)
+    const streamRef = useRef<MediaStream | null>(null)
     const { user } = useUserContext()
+    const { cameraEnabled } = useMeetingContext()
 
     useEffect(() => {
-        if (!localParticipant) return
+        const startCamera = async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: false
+                })
+                streamRef.current = stream
 
-        const attachVideo = () => {
-            const pub = localParticipant.getTrackPublication(Track.Source.Camera)
-            const track = pub?.track
-
-            console.log('[attachVideo] camera track:', track)
-
-            if (track && videoRef.current) {
-                track.attach(videoRef.current)
-                setTrack(pub)
-            } else {
-                setTimeout(attachVideo, 100)
+                if (videoRef.current) {
+                    videoRef.current.srcObject = stream
+                }
+            } catch (error) {
+                console.error('Error accessing camera:', error)
             }
         }
 
-        const onTrackPublished = (pub: TrackPublication) => {
-            if (pub.source === Track.Source.Camera) {
-                console.log('[event] trackPublished (camera):', pub.track)
-                attachVideo()
+        const stopCamera = () => {
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach((track) => track.stop())
+                streamRef.current = null
+            }
+            if (videoRef.current) {
+                videoRef.current.srcObject = null
             }
         }
 
-        const onTrackMuted = () => {
-            console.log('[event] trackMuted')
-            attachVideo()
+        if (cameraEnabled) {
+            startCamera()
+        } else {
+            stopCamera()
         }
-
-        const onTrackUnmuted = () => {
-            console.log('[event] trackUnmuted')
-            attachVideo()
-        }
-
-        const onTrackUnpublished = () => {
-            console.log('[event] trackUnpublished')
-            attachVideo()
-        }
-
-        localParticipant.on('trackPublished', onTrackPublished)
-        localParticipant.on('trackMuted', onTrackMuted)
-        localParticipant.on('trackUnmuted', onTrackUnmuted)
-        localParticipant.on('trackUnpublished', onTrackUnpublished)
-
-        attachVideo()
 
         return () => {
-            const track = localParticipant.getTrackPublication(Track.Source.Camera)?.track
-            if (track && videoRef.current) {
-                track.detach(videoRef.current)
-                setTrack(null)
-            }
-            localParticipant.off('trackPublished', onTrackPublished)
-            localParticipant.off('trackMuted', onTrackMuted)
-            localParticipant.off('trackUnmuted', onTrackUnmuted)
-            localParticipant.off('trackUnpublished', onTrackUnpublished)
+            stopCamera()
         }
-    }, [localParticipant])
+    }, [cameraEnabled])
 
     return (
         <Box
