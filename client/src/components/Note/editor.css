@@ -1,0 +1,30 @@
+/* editor.css */
+.editor-bold {
+    font-weight: bold;
+  }
+  
+  .editor-italic {
+    font-style: italic;
+  }
+  
+  .editor-underline {
+    text-decoration: underline;
+  }
+  
+  .editor-strikethrough {
+    text-decoration: line-through;
+  }
+  
+  .editor-underline-strikethrough {
+    text-decoration: underline line-through;
+  }
+  
+  .editor-code {
+    color: black;
+    background: #eee;
+    border: 1px solid #ccc;
+    padding: 2px 4px;
+    font-family: monospace;
+    font-size: 0.9em;
+  }
+  
