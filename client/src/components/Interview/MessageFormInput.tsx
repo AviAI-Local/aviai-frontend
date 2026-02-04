@@ -3,16 +3,20 @@ import { Formik, type FormikHelpers } from 'formik'
 import { Send } from '@mui/icons-material'
 
 type MessageFormInputProps = TextFieldProps & {
-  handleSubmit: (
-    values: { message: string },
-    formikHelpers: FormikHelpers<{ message: string }>
-  ) => void | Promise<void>
+  handleSubmit: (text: string) => void
 }
 
 
 function MessageFormInput({ handleSubmit, ...props }: MessageFormInputProps) {
+    const onSubmit = (values: { message: string }, { resetForm }: FormikHelpers<{ message: string }>) => {
+        const trimmed = values.message.trim()
+        if (!trimmed) return
+        handleSubmit(trimmed)
+        resetForm()
+    }
+
     return (
-        <Formik initialValues={{ message: '' }} onSubmit={handleSubmit}>
+        <Formik initialValues={{ message: '' }} onSubmit={onSubmit}>
             {({ handleSubmit, handleChange, values }) => (
                 <form onSubmit={handleSubmit} style={{ width: '100%' }}>
                     <Box

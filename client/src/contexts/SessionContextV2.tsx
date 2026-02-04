@@ -14,12 +14,13 @@ type SessionContextV2Type = {
   isSpeaking: boolean;
   isPlayingAudio: boolean;
   latestResponse: string;
+  userQuery: string;
   voiceInstructions: string;
   avatarInstructions: string;
-  isLoading: boolean;
   error: string | null;
   connectConversation: (sessionIdToConnect?: string) => Promise<void>;
   toggleSpeaking: () => void;
+  sendMessage: (text: string) => void;
   disconnect: () => void;
   resetSession: () => void;
 };
@@ -56,9 +57,9 @@ export const SessionProviderV2 = ({ children }: SessionProviderV2Props) => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [latestResponse, setLatestResponse] = useState("");
+  const [userQuery, setUserQuery] = useState("")
   const [voiceInstructions, setVoiceInstructions] = useState("neutral");
   const [avatarInstructions, setAvatarInstructions] = useState("neutral");
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Refs for WebSocket and audio
@@ -143,6 +144,9 @@ export const SessionProviderV2 = ({ children }: SessionProviderV2Props) => {
       if (msg.type === "status") {
         setStatus(msg.state);
       }
+      if (msg.type === "user_query") {
+        setUserQuery(msg.query)
+      }
       return;
     }
     // Binary audio data
@@ -150,37 +154,6 @@ export const SessionProviderV2 = ({ children }: SessionProviderV2Props) => {
       sendJson({ type: "audio_playback_complete" });
     });
   }, [playAudio, sendJson]);
-
-  // Create a new session
-//   const createSession = useCallback(async (scenarioId: string, accountId: string): Promise<string> => {
-//     setIsLoading(true);
-//     setError(null);
-
-//     try {
-//       const response = await fetch(`${API_BASE_URL}/api/v1/session/create`, {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({
-//           scenario_id: scenarioId,
-//           account_id: accountId,
-//         }),
-//       });
-
-//       if (!response.ok) {
-//         throw new Error(`Failed to create session: ${response.statusText}`);
-//       }
-
-//       const data = await response.json();
-//       setSessionId(data.session_id);
-//       setIsLoading(false);
-//       return data.session_id;
-//     } catch (err) {
-//       const errorMessage = err instanceof Error ? err.message : "Unknown error";
-//       setError(errorMessage);
-//       setIsLoading(false);
-//       throw err;
-//     }
-//   }, []);
 
   // Connect to conversation WebSocket
   const connectConversation = useCallback(async (sessionIdToConnect?: string): Promise<void> => {
@@ -237,6 +210,11 @@ export const SessionProviderV2 = ({ children }: SessionProviderV2Props) => {
     }
   }, [connected, sendJson]);
 
+  const sendMessage = useCallback((text: string) => {
+    if (!connected || !text.trim()) return;
+    sendJson({ type: "text_message", text: text.trim() });
+  }, [connected, sendJson]);
+
   // Disconnect and cleanup
   const disconnect = useCallback(() => {
     // Close WebSocket
@@ -285,13 +263,14 @@ export const SessionProviderV2 = ({ children }: SessionProviderV2Props) => {
     latestResponse,
     voiceInstructions,
     avatarInstructions,
-    isLoading,
     error,
+    userQuery,
     // Actions
     connectConversation,
     toggleSpeaking,
     disconnect,
     resetSession,
+    sendMessage
   };
 
   return (

@@ -5,10 +5,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowDownward } from '@mui/icons-material'
 import MessageFormInput from './MessageFormInput'
 import { useUserContext } from '../../contexts/UserContext'
+import { useSession } from '../../contexts/SessionContextV2'
 
 function ChatPanel() {
     const { messages, setMessages } = useConversation()
     const { user } = useUserContext()
+    const { sendMessage } = useSession()
 
     const messagesEnd = useRef<HTMLDivElement>(null)
     const messageContainer = useRef<HTMLDivElement>(null)
@@ -39,29 +41,30 @@ function ChatPanel() {
         setShowScrollToBottom(!isAtBottom)
     }, [])
 
-    const sendMessage = useCallback(
-        async (values: { message: string }, { resetForm }: { resetForm: () => void }) => {
-            const trimmedMessage = values.message.trim()
-            if (!trimmedMessage) return
 
-            try {
-                // Add message to local state (chat is local only now, no LiveKit)
-                const newMessage = {
-                    id: crypto.randomUUID(),
-                    name: user?.username || 'You',
-                    message: trimmedMessage,
-                    timestamp: Date.now(),
-                    isSelf: true
-                }
+    // const sendMessage = useCallback(
+    //     async (values: { message: string }, { resetForm }: { resetForm: () => void }) => {
+    //         const trimmedMessage = values.message.trim()
+    //         if (!trimmedMessage) return
 
-                setMessages((prev) => [...prev, newMessage])
-                resetForm()
-            } catch (error) {
-                console.error('Error sending message:', error)
-            }
-        },
-        [user?.username, setMessages]
-    )
+    //         try {
+    //             // Add message to local state (chat is local only now, no LiveKit)
+    //             const newMessage = {
+    //                 id: crypto.randomUUID(),
+    //                 name: user?.username || 'You',
+    //                 message: trimmedMessage,
+    //                 timestamp: Date.now(),
+    //                 isSelf: true
+    //             }
+
+    //             setMessages((prev) => [...prev, newMessage])
+    //             resetForm()
+    //         } catch (error) {
+    //             console.error('Error sending message:', error)
+    //         }
+    //     },
+    //     [user?.username, setMessages]
+    // )
 
     const renderedMessages = useMemo(
         () =>

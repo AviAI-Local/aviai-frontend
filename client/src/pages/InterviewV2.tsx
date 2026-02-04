@@ -50,13 +50,14 @@ function Inner() {
         isPlayingAudio,
         latestResponse,
         avatarInstructions,
+        userQuery,
         connectConversation,
         toggleSpeaking,
         disconnect,
         resetSession
     } = useSession()
 
-    const { setTranscripts, setMessages, transcripts, setFacialExpression, setIsSpeaking } = useConversation()
+    const { setTranscripts, setMessages, transcripts, setFacialExpression, setIsSpeaking, addUserMessage } = useConversation()
     const { loading } = useLoading()
 
     const { showChat, cameraEnabled, showTranscript, showNote, option, setOption, stopVideoRecording, toggleMic } = useMeetingContext()
@@ -122,6 +123,22 @@ function Inner() {
         setTranscripts((prev) => [...prev, transcript])
         setMessages((prev) => [...prev, transcript])
     }, [latestResponse, setTranscripts, setMessages])
+
+    useEffect(() => {
+        console.log("User Query: ", userQuery)
+        if (!userQuery) return 
+        // addUserMessage(userQuery)
+        const transcript = {
+            id: Date.now().toString(),
+            name: 'You',
+            message: userQuery,
+            timestamp: Date.now(),
+            isSelf: true
+        }
+
+        setTranscripts((prev) => [...prev, transcript])
+        setMessages((prev) => [...prev, transcript])
+    }, [userQuery, setTranscripts, setMessages])
 
     // Navigate away when disconnected
     useEffect(() => {

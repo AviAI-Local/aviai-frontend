@@ -38,6 +38,10 @@ export const ConversationProvider = ({ children }: { children: React.ReactNode }
         console.log('facial expression: ', facialExpression)
     }, [facialExpression])
 
+    useEffect(() => {
+        console.log("Transcript: ", transcripts)
+    }, [transcripts])
+
     return (
         <ConversationContext.Provider
             value={{
