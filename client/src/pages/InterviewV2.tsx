@@ -59,7 +59,22 @@ function Inner() {
     const { setTranscripts, setMessages, transcripts, setFacialExpression, setIsSpeaking } = useConversation()
     const { loading } = useLoading()
 
-    const { showChat, cameraEnabled, showTranscript, showNote, option, setOption, stopVideoRecording } = useMeetingContext()
+    const { showChat, cameraEnabled, showTranscript, showNote, option, setOption, stopVideoRecording, toggleMic } = useMeetingContext()
+    // Toggle mic with Space or Enter key (skip when typing in inputs)
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.code === 'Space' || e.code === 'Enter') {
+                const tag = (e.target as HTMLElement)?.tagName
+                if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target as HTMLElement)?.isContentEditable) return
+                e.preventDefault()
+                toggleMic()
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyDown)
+        return () => window.removeEventListener('keydown', handleKeyDown)
+    }, [toggleMic])
+
     const lastMessage = transcripts[transcripts.length - 1]?.message || ''
 
     const [noteValues, setNoteValues] = useState<NoteFormValues>({
