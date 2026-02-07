@@ -3,11 +3,13 @@ import type { UseCaseData } from './usecase'
 
 export type Session = {
     id: string
-    conversionHistory?: ConversationHistory[]
-    usecaseId: string
+    conversationHistory?: ConversationHistory | null  // Allow null
+    scenarioId: string
+    scenarioName: string
     createdAt?: string
     recording?: string
 }
+
 
 export type SessionContextType = {
     session: Session | null

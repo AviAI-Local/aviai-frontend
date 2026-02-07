@@ -52,8 +52,9 @@ function CreateUseCaseButton() {
     const handleSubmit = async (values: FormikValues, props: any) => {
         const { setSubmitting } = props
         const summary = values.summary ?? ''
-        const interviewRule = values.interviewRule ?? ''
+        const interviewRule = values.interviewRule ?? '  '
         const userId = user.id 
+        console.log(values)
         try {
             const res = await createUseCase(
                 values.name,

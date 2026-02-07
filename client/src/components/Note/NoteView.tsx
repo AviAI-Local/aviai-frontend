@@ -90,7 +90,11 @@ function NoteView({ note, mode, setMode, onSaveNote, onDeleteNote }: NoteViewPro
         async (values: FormikValues) => {
             try {
                 setLoading(true)
-                const contentToUpdate = JSON.parse(values.content || EMPTY_EDITOR_STATE)
+                const contentToUpdate =
+                    typeof values.content === 'string'
+                        ? JSON.parse(values.content)
+                        : (values.content || EMPTY_EDITOR_STATE)
+                console.log(contentToUpdate)
                 if (note.id) {
                     const updatedNote = await updateNote(note.id, values.title, contentToUpdate)
                     onSaveNote(updatedNote)

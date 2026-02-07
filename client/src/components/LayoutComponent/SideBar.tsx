@@ -33,17 +33,17 @@ function SideBar({ onNavigate }: { onNavigate: (path: string) => void }) {
                     <Logo />
                 </Box>
                 <Box display='flex' flexDirection='column' gap={1} marginTop={5}>
-                    <SidebarItem
+                    {/* <SidebarItem
                         Icon={HomeIcon}
                         label='Dashboard'
                         selected={isSelected('/', true)}
                         onClick={() => onNavigate('/')}
-                    />
+                    /> */}
                     <SidebarItem
                         Icon={BriefcaseIcon}
                         label='Use Case'
-                        selected={isSelected('/usecases')}
-                        onClick={() => onNavigate('/usecases')}
+                        selected={isSelected('/scenarios')}
+                        onClick={() => onNavigate('/scenarios')}
                     />
                     <SidebarItem
                         Icon={NoteIcon}

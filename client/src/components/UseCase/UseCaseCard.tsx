@@ -36,8 +36,8 @@ function UseCaseCard({ data }: UseCaseCardProps) {
             conversionHistory: res.conversation_history,
             usecaseId: data.id
         })
-        setUsecase(data)
         navigate(`/interview/${res.session_id}`)
+        setUsecase(data)
     }
 
     const handleOpen = () => {
@@ -65,7 +65,7 @@ function UseCaseCard({ data }: UseCaseCardProps) {
         <Box
             onClick={() => {
                 if (user.role === 'Admin') {
-                    navigate(`/usecases/${data.id}`)
+                    navigate(`/scenarios/${data.id}`)
                 }
             }}
             sx={{

@@ -30,7 +30,7 @@ function LoginForm({ onSwitchMode }: { onSwitchMode?: () => void }) {
         try {
             await login(values.email, values.password)
             await refetchUser()
-            navigate('/usecases')
+            navigate('/scenarios')
         } catch (error: any) {
             if (error.response?.status === 400 || error.response?.status === 401) {
                 const message = error.response.data.detail

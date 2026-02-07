@@ -74,7 +74,7 @@ export default function HistoryTable({ sessions, useCaseMap }: HistoryTableProps
                                 <TableCell padding='checkbox'>
                                     <Checkbox />
                                 </TableCell>
-                                <TableCell sx={{ fontSize: '16px' }}>{useCaseMap[session.usecaseId]}</TableCell>
+                                <TableCell sx={{ fontSize: '16px' }}>{session.scenarioName}</TableCell>
                                 <TableCell sx={{ color: 'text.secondary' }}>{session.id}</TableCell>
                                 <TableCell sx={{ color: 'text.secondary' }}>
                                     {session.createdAt ? formatDate(session.createdAt) : '-'}
@@ -85,9 +85,9 @@ export default function HistoryTable({ sessions, useCaseMap }: HistoryTableProps
 
                                 <TableCell sx={{ color: 'text.secondary' }}>{getSessionDuration(session)}</TableCell>
                                 <TableCell align='right'>
-                                    {session.conversionHistory === undefined ? (
+                                    {!session.conversationHistory ? (
                                         <CircularProgress size={20} />
-                                    ) : session.conversionHistory.length > 0 ? (
+                                    ) : session.conversationHistory.content.length > 0 ? (
                                         <>
                                             <IconButton onClick={(e) => handleMenuOpen(e, index)}>
                                                 <MoreVertIcon />
@@ -96,7 +96,7 @@ export default function HistoryTable({ sessions, useCaseMap }: HistoryTableProps
                                                 <HistoryActionMenu
                                                     anchorEl={anchorEl}
                                                     handleMenuClose={handleMenuClose}
-                                                    conversationHistoryId={session.conversionHistory[0].id}
+                                                    conversationHistoryId={session.conversationHistory.id}
                                                     recording={recording}
                                                 />
                                             )}

@@ -23,15 +23,16 @@ export const mapSessions = (raw: any[]): Session[] => {
     return raw.map(
         (item): Session => ({
             id: item.session_id,
-            usecaseId: item.usecase_id,
+            scenarioId: item.scenario_id,
+            scenarioName: item.scenario_name,
             createdAt: item.created_at,
             recording: item.recording,
-            conversionHistory: (item.conversation_history || []).map(
-                (history: any): ConversationHistory => ({
-                    id: history.conversation_history_id,
-                    sessionId: history.session_id,
-                    timestamp: history.timestamp,
-                    content: (history.content || []).map(
+            conversationHistory: item.conversation_history 
+                ? {
+                    id: item.conversation_history.conversation_history_id,
+                    sessionId: item.conversation_history.session_id,
+                    timestamp: item.conversation_history.timestamp,
+                    content: (item.conversation_history.content || []).map(
                         (c: any): ConversationContent => ({
                             timestamp: c.timestamp,
                             datetime: c.datetime,
@@ -42,11 +43,12 @@ export const mapSessions = (raw: any[]): Session[] => {
                             avatarInstructions: c.avatar_instructions
                         })
                     )
-                })
-            )
+                }
+                : null
         })
     )
 }
+
 
 export function mapNote(note: any): Note {
     return {

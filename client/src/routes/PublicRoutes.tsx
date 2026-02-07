@@ -9,7 +9,7 @@ export default function PublicRoutes() {
   }
 
   if (user) {
-    return <Navigate to="/usecases" replace />
+    return <Navigate to="/scenarios" replace />
   }
 
   return <Outlet />

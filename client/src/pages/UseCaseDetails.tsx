@@ -73,7 +73,7 @@ function UseCaseDetails() {
             const deletedUseCase = await deleteUseCase(id)
             if (!deletedUseCase) throw new Error('Use case not found')
             handleUpdateUseCases()
-            navigate('/usecases')
+            navigate('/scenarios')
             setNotify({ message: 'Use case deleted successfully', type: 'success', open: true })
         } catch (err) {
             setNotify({ message: 'Failed to delete use case', type: 'error', open: true })

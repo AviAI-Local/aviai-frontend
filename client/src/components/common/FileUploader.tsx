@@ -34,10 +34,10 @@ function FileUploader({ setData, setActiveStep }: FileUploaderProps) {
                 const res = await extractDocument(file)
                 console.log(res)
                 setData({
-                    name: res.usecase_name,
+                    name: res.scenario_name,
                     personalCharacteristic: res.personal_characteristics,
                     scenario: res.scenario,
-                    summary: res.usecase_summary,
+                    summary: res.scenario_summary,
                     attitude: res.attitude_in_interview,
                     characterName: res.character_name,
                     gender: res.gender,

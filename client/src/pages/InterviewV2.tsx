@@ -146,7 +146,7 @@ function Inner() {
         console.log('session: ', session)
         if (!session && status === 'disconnected') {
             setTimeout(() => {
-                navigate('/usecases')
+                navigate('/scenarios')
                 setUsecase(null)
                 setSession(null)
             }, 500)

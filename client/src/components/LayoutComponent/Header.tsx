@@ -20,7 +20,7 @@ function Header({ title, total, pageType }: HeaderProps) {
 
     useEffect(() => {
         // Show search bar only on use cases page
-        if (location.pathname === '/usecases') {
+        if (location.pathname === '/scenarios') {
             setDisplaySearchBar(true)
         } else {
             setDisplaySearchBar(false)
@@ -47,13 +47,13 @@ function Header({ title, total, pageType }: HeaderProps) {
                     </Typography>
                 )}
             </Box>
-            {displaySearchBar && (
+            {/* {displaySearchBar && (
                 <Box sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', display: 'flex' }}>
                     <Box sx={{ width: '100%', maxWidth: 400 }}>
                         <SearchBar />
                     </Box>
                 </Box>
-            )}
+            )} */}
             {user && (
                 <UserInfo
                     username={user.username}

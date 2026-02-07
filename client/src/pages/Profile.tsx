@@ -84,7 +84,7 @@ function Profile() {
                             {!user.avatarUrl && user.username.split(' ').map(n => n[0]).join('').toUpperCase()}
                         </Avatar>
                         
-                        {/* Edit Avatar Button */}
+                        {/* Edit Avatar Button
                         <IconButton
                             onClick={() => setAvatarUploadOpen(true)}
                             sx={{
@@ -101,7 +101,7 @@ function Profile() {
                             }}
                         >
                             <Edit sx={{ fontSize: 16 }} />
-                        </IconButton>
+                        </IconButton> */}
                     </Box>
 
                     {/* Edit Banner Button */}
@@ -156,12 +156,12 @@ function Profile() {
                 </Paper>
 
                 {/* Avatar Upload Dialog */}
-                <AvatarUploader
+                {/* <AvatarUploader
                     open={avatarUploadOpen}
                     onClose={() => setAvatarUploadOpen(false)}
                     onUpload={handleAvatarUpload}
                     currentAvatar={user.avatarUrl}
-                />
+                /> */}
             </Box>
         </PageLayout>
     )

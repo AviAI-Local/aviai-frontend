@@ -77,8 +77,8 @@ export const createUseCase = async (
     const res = await serverAPI.post(
         '/scenario',
         {
-            usecase_name: name,
-            usecase_summary: summary,
+            scenario_name: name,
+            scenario_summary: summary,
             personal_characteristics: personalCharacteristic,
             attitude_in_interview: attitude,
             rule_interview: interviewRule,
@@ -108,7 +108,7 @@ export const extractDocument = async (file: File) => {
     const formData = new FormData()
     formData.append('file', file)
 
-    const res = await serverAPI.post('/document-process/extract', formData, {
+    const res = await serverAPI.post('/document/extract', formData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }

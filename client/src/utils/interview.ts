@@ -3,10 +3,10 @@ import { formatTime } from './format'
 
 export function getSessionDuration(session: Session): string | null {
     const createdAt = session.createdAt
-    const history = session.conversionHistory
-    if (!createdAt || !history || history.length === 0) return null
+    const history = session.conversationHistory
+    if (!createdAt || !history) return null
     const start = new Date(createdAt)
-    const content = history[0].content
+    const content = history.content
     if (!content || content.length === 0) return null
     const lastMessage = content[content.length - 1]
     const end = new Date(lastMessage.datetime)

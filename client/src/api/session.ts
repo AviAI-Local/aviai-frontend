@@ -63,9 +63,9 @@ export const uploadVideo = async (sessionID: string, file: File) => {
 
 }
 
-export const getUserSessions = async (userId: string): Promise<Session[]> => {
+export const getUserSessions = async () => {
     try {
-        const res = await serverAPI.get(`/sessions/account/${userId}`)
+        const res = await serverAPI.get(`/session`)
 
         if (res.status === 200 && Array.isArray(res.data)) {
             return mapSessions(res.data)
@@ -78,9 +78,23 @@ export const getUserSessions = async (userId: string): Promise<Session[]> => {
     }
 }
 
+// export const getUserHistory = async () => {
+//     try {
+//         const res = await serverAPI.get(`/conversation/`)
+//         if (res.status === 200 && Array.isArray(res.data)) {
+//             return mapSessions(res.data)
+//         }
+
+//         return []
+//     } catch (err) {
+//         console.error('Error fetching sessions', err)
+//         return []
+//     }
+// }
+
 export const getConversationPDF = async (id: string) => {
     try {
-        const res = await serverAPI.get(`/conversation-history/convert-to-pdf/${id}`)
+        const res = await serverAPI.get(`conversation/convert-to-pdf/${id}`)
         if (res.status === 200) {
             return res.data
         }
@@ -91,7 +105,7 @@ export const getConversationPDF = async (id: string) => {
 
 export const getEmotionAnalysis = async (id: string) => {
     try {
-        const res = await serverAPI.post(`agents/conversation-analysis/analyze-by-id/${id}`)
+        const res = await serverAPI.post(`analysis/analyze-by-id/${id}`)
         if (res.status === 200) {
             return res.data
         }
@@ -104,7 +118,7 @@ export const getPerformanceAnalysis = async (conversationId: string, userId: str
     console.log(conversationId, userId)
    
     try { 
-        const res = await serverAPI.post(`agents/performance-analysis/pdf?conversation_id=${conversationId}&user_id=${userId}&model=gpt-4o-mini`)
+        const res = await serverAPI.post(`performance-analysis/pdf?conversation_id=${conversationId}&user_id=${userId}&model=gpt-4o-mini`)
         if (res.status === 200) {
             return res.data
         }

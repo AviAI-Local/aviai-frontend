@@ -34,7 +34,8 @@ function History() {
         const fetchData = async () => {
             try {
                 setLoading(true)
-                const sessionData = await getUserSessions(id)
+                const sessionData = await getUserSessions()
+                // console.log(sessionData)
 
                 const sortedSessions = sessionData.sort((a, b) => {
                     const dateA = new Date(a.createdAt ?? 0).getTime()
@@ -48,6 +49,7 @@ function History() {
                 })
 
                 setUsecaseMap(map)
+                console.log(usecaseMap)
                 setSessions(sortedSessions)
             } catch (err) {
                 console.error('Error fetching history', err)
@@ -57,7 +59,7 @@ function History() {
         }
 
         fetchData()
-    }, [])
+    }, [useCases])
 
     return (
         <PageLayout headerProps={{ title: 'History', total: sessions.length, pageType: 'Histories' }}>

@@ -35,7 +35,7 @@ function SignUpForm({ onSwitchMode }: { onSwitchMode?: () => void }) {
         try {
             await signup(values.email, values.password, values.name, values.major)
             await refetchUser()
-            navigate('/usecases')
+            navigate('/scenarios')
         } catch (error: any) {
             if (error.response?.status === 400) {
                 const message = error.response.data.detail

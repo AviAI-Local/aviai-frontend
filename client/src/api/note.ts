@@ -1,7 +1,7 @@
 import { serverAPI } from './axios'
 
 export async function getNotes(accountId: string) {
-    const res = await serverAPI.get(`/note/notes/account/${accountId}`)
+    const res = await serverAPI.get(`/note/account/${accountId}`)
 
     try {
         if (res.status === 200) {
@@ -14,7 +14,7 @@ export async function getNotes(accountId: string) {
 
 export async function updateNote(noteId: string, title: string, noteContent: any) {
     try {
-        const res = await serverAPI.patch(`/note/notes/${noteId}`, {
+        const res = await serverAPI.patch(`/note/update/${noteId}`, {
             title,
             note_content: noteContent
         })
@@ -30,7 +30,7 @@ export async function updateNote(noteId: string, title: string, noteContent: any
 
 export async function createNote(title: string, content: any, userId: string, sessionId?: string) {
     try {
-        const res = await serverAPI.post(`/note/notes`, {
+        const res = await serverAPI.post(`/note/create`, {
             title: title,
             note_content: content,
             account_id: userId,
@@ -46,7 +46,7 @@ export async function createNote(title: string, content: any, userId: string, se
     }
 }
 export async function getNote(id: string) {
-    const res = await serverAPI.get(`/note/notes/${id}`)
+    const res = await serverAPI.get(`/note/${id}`)
 
     try {
         if (res.status === 200) {
@@ -59,7 +59,7 @@ export async function getNote(id: string) {
 
 export async function deleteNote(id: string) {
     try {
-        const res = await serverAPI.delete(`/note/notes/${id}`)
+        const res = await serverAPI.delete(`/note/delete/${id}`)
 
         if (res.status === 200) {
             return res.data
@@ -70,9 +70,9 @@ export async function deleteNote(id: string) {
     }
 }
 
-export const searchNoteByUsecaseName = async (name: string) => {
+export const searchNoteByScenarioName = async (name: string) => {
     const res = await serverAPI.get(
-        `/note/search/by-usecase-name`, { params: { usecase_name: name } }
+        `/note/search/by-scenario-name`, { params: { scenario_name: name } }
     )
 
     try {
