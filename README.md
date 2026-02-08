@@ -1,66 +1,90 @@
 # AviAI Frontend
 
-AviAI is the frontend for an AI-driven project. This repository contains the React + TypeScript implementation of the user interface.
+AviAI is an AI-powered aviation interview training platform. This repository contains the React + TypeScript frontend application.
 
----
+## Getting Started
 
-## 🚀 Getting Started
+### Prerequisites
 
-### Clone the repository
+- Node.js 20+
+- npm
+
+### Installation
+
 ```bash
+# Clone the repository
 git clone <repository-url>
-cd AviAI
-```
+cd aviai-frontend
 
-### Install dependencies
-```bash
+# Install dependencies
+cd client
 npm install
-```
 
-### Run the development server
-```bash
+# Start development server
 npm run dev
 ```
 
----
+The app will be available at `http://localhost:3000`
 
-## 📂 Project Structure
+### Using Docker
 
-The project follows a modular structure for scalability and readability:
+```bash
+# Build the image
+docker build -t aviai-frontend .
+
+# Run the container
+docker run -p 3000:3000 aviai-frontend
+
+# Run in detached mode (background)
+docker run -d -p 3000:3000 --name aviai aviai-frontend
+
+# Stop the container
+docker stop aviai
+
+# Remove the container
+docker rm aviai
+```
+
+## Project Structure
 
 ```
-src/
-├── api/              # API service calls
-├── assets/           # Static assets (images, icons, etc.)
-├── components/       # Reusable UI components
-├── constants/        # Application constants
-├── contexts/         # React contexts for state management
-├── pages/            # Page-level components (routes)
-├── routes/           # Application routing setup
-├── types/            # TypeScript type definitions
-├── utils/            # Utility functions
-├── App.css           # Global styles
-├── App.tsx           # Main application entry component
+client/src/
+├── api/          # API service calls (axios)
+├── assets/       # Static assets (images, icons)
+├── components/   # Reusable UI components
+├── constants/    # Application constants
+├── contexts/     # React contexts for state management
+├── pages/        # Page-level components
+├── routes/       # Application routing
+├── types/        # TypeScript type definitions
+├── utils/        # Utility functions
+└── App.tsx       # Main application component
 ```
 
----
+## Tech Stack
 
-## 🛠️ Tech Stack
+- React 19
+- TypeScript
+- Vite
+- Material UI
+- Axios
+- Formik + Yup
+- Lexical (rich text editor)
 
-- **React** (with TypeScript)
-- **Vite** (for fast development build)
-- **npm** (package manager)
+## Available Scripts
 
----
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
 
-## 📜 Scripts
+## Environment Variables
 
-- `npm run dev` - Start development server  
-- `npm run build` - Build for production  
-- `npm run preview` - Preview production build  
+Create a `.env` file in the `client` directory:
 
----
+```
+VITE_UNSPLASH_ACCESS_KEY=your_unsplash_key
+```
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License.
+MIT License
