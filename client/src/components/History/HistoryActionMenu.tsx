@@ -58,7 +58,7 @@ function HistoryActionMenu({ anchorEl, handleMenuClose, conversationHistoryId, r
 
     const handleOpenRecording = () => {
         if (recording) {
-            window.open(`/recordings/${recording}`, '_blank', 'noopener,noreferrer')
+            window.open(`http://localhost:8000/recordings/${recording}`, '_blank', 'noopener,noreferrer')
         }
     }
 

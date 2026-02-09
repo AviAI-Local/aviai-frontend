@@ -52,8 +52,8 @@ function ControlBar({}: ControlBarProps) {
 
     const handleRecordClick = async () => {
         if (isRecording) {
-            await stopScreenRecording()
             setHasRecorded(true)
+            await stopScreenRecording()
         } else {
             await startScreenRecording()
         }

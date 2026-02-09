@@ -39,10 +39,10 @@ docker run -p 3000:3000 aviai-frontend
 docker run -d -p 3000:3000 --name aviai aviai-frontend
 
 # Stop the container
-docker stop aviai
+docker stop aviai-frontend
 
 # Remove the container
-docker rm aviai
+docker rm aviai-frontend
 ```
 
 ## Project Structure
