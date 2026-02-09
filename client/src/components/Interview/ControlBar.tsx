@@ -7,6 +7,9 @@ import ChatIcon from '../Icons/ChatIcon'
 import TranscriptIcon from '../Icons/TranscriptIcon'
 import { useMeetingContext } from '../../contexts/MeetingContext'
 import RecordOption from './RecordOption'
+import { useSession } from '../../contexts/SessionContextV2'
+import RecordIcon from '../Icons/RecordIcon'
+import { useState } from 'react'
 
 export interface ControlBarProps {}
 
@@ -23,6 +26,9 @@ function ControlBar({}: ControlBarProps) {
         showNote,
         toggleNote
     } = useMeetingContext()
+
+    const { startScreenRecording, stopScreenRecording, isRecording } = useSession()
+    const [hasRecorded, setHasRecorded] = useState(false)
 
     const handleToggle = async (label: string) => {
         switch (label) {
@@ -41,6 +47,15 @@ function ControlBar({}: ControlBarProps) {
             case 'Transcript':
                 toggleTranscript()
                 break
+        }
+    }
+
+    const handleRecordClick = async () => {
+        if (isRecording) {
+            await stopScreenRecording()
+            setHasRecorded(true)
+        } else {
+            await startScreenRecording()
         }
     }
 
@@ -81,7 +96,17 @@ function ControlBar({}: ControlBarProps) {
                 />
             </Tooltip>
 
-            <RecordOption/>
+
+            <Tooltip title={'Record'} placement='top'>
+                <ControlButton
+                    disabled={hasRecorded}
+                    onClick={handleRecordClick}
+                    icon={RecordIcon}
+                    accentColor={'#F25D5A'}
+                    baseColor={'#FFD0D8'}
+                    selected={isRecording}
+                />
+            </Tooltip>
 
             <Tooltip title={'Chat'} placement='top'>
                 <ControlButton

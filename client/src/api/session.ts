@@ -41,26 +41,18 @@ export const uploadRecording = async (sessionID: string, file: File) => {
 }
 
 export const uploadVideo = async (sessionID: string, file: File) => {
-    const formData = new FormData();
-    formData.append('file', file);
+    console.log('Uploading video:', { sessionID, fileName: file.name, fileSize: file.size, fileType: file.type })
+
+    const formData = new FormData()
+    formData.append('file', file)
     formData.append('session_id', sessionID)
 
-    const res = await serverAPI.post('/recording/upload-video', formData,
-        {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        }
-    )
+    const res = await serverAPI.post('/recording/upload-video', formData)
 
-    try {
-        if (res.status === 200) {
-            return res.data
-        }
-    } catch (err) {
-        return err
+    if (res.status === 200) {
+        return res.data
     }
-
+    throw new Error(`Upload failed with status ${res.status}`)
 }
 
 export const getUserSessions = async () => {

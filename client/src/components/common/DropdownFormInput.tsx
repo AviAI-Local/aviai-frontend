@@ -8,11 +8,11 @@ type DropdownFormInputProps = Omit<SelectProps, 'name'> & {
     options: DropdownOption[]
 }
 
-function DropdownFormInput({ name, label, options, sx, ...props }: DropdownFormInputProps) {
+function DropdownFormInput({ name, label, options, sx, fullWidth, ...props }: DropdownFormInputProps) {
     const [field, meta, helpers] = useField(name)
 
     return (
-        <Box sx={{ ...sx }}>
+        <Box sx={{ width: fullWidth ? '100%' : 'auto', ...sx }}>
             <InputLabel htmlFor={name} sx={{ fontWeight: 'bold', color: '#29293A', mb: 1 }}>
                 {label}
             </InputLabel>
@@ -20,10 +20,10 @@ function DropdownFormInput({ name, label, options, sx, ...props }: DropdownFormI
                 {...field}
                 {...props}
                 id={name}
+                fullWidth={fullWidth}
                 value={field.value || ''}
                 onChange={(e) => helpers.setValue(e.target.value)}
                 sx={{
-                    
                     '& .MuiOutlinedInput-notchedOutline': {
                         borderColor: '#C0C8DB',
                         borderRadius: '12px',

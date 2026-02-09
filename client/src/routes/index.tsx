@@ -24,7 +24,7 @@ export const routes = [
     {
         element: <PrivateRoutes />,
         children: [
-            { path: '/', element: <Home /> },
+            // { path: '/', element: <Home /> },
             { path: '/scenarios', element: <UseCaseList /> },
             { path: '/scenarios/:id', element: <UseCaseDetails /> },
             { path: '/interview/:id', element: <Interview /> },

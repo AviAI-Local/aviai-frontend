@@ -6,12 +6,14 @@ import { useUserContext } from '../../contexts/UserContext'
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined'
 import CloseIcon from '@mui/icons-material/Close'
 import { useMeetingContext } from '../../contexts/MeetingContext'
+import { useSession } from '../../contexts/SessionContextV2'
 
 function RecordOption() {
     const [open, setOpen] = useState(false)
     // const [option, setOption] = useState<String | null>(null)
     const { user } = useUserContext()
-    const { startAudioRecording, stopAudioRecording, startVideoRecording, stopVideoRecording, recording, option, setOption } = useMeetingContext()
+    const { startScreenRecording, stopScreenRecording, isRecording } = useSession()
+    const { startAudioRecording, stopAudioRecording, startVideoRecording, stopVideoRecording, option, setOption } = useMeetingContext()
 
     if (!user) {
         throw new Error('User is not authenticated')
@@ -28,7 +30,7 @@ function RecordOption() {
         if (option === 'audio') {
             stopAudioRecording()
         } else {
-            stopVideoRecording()
+            stopScreenRecording()
         }
     }
 
@@ -36,7 +38,7 @@ function RecordOption() {
         <>
             <Tooltip title={'Record'} placement='top'>
                 <ControlButton
-                    disabled={recording}
+                    disabled={isRecording}
                     onClick={option ? handleStopRecording : handleClickOpen}
                     icon={RecordIcon}
                     accentColor={'#F25D5A'}
@@ -122,7 +124,7 @@ function RecordOption() {
                                     title={'Video'}
                                     onClick={async () => {
                                         setOption('video')
-                                        startVideoRecording()
+                                        startScreenRecording()
                                         setOpen(false)
                                     }}
                                 />

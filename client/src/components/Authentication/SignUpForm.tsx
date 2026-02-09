@@ -63,7 +63,7 @@ function SignUpForm({ onSwitchMode }: { onSwitchMode?: () => void }) {
                 paddingX: 5,
                 paddingY: 2,
                 boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
-                height: '95%'
+                height: '70%'
             }}
         >
             <Stack spacing={3}>
@@ -142,11 +142,7 @@ function SignUpForm({ onSwitchMode }: { onSwitchMode?: () => void }) {
                                         options={majorOptions}
                                         name='major'
                                         label='Major'
-                                        sx={{
-                                            '& .MuiInputBase-input': {
-                                                minWidth: '100px'
-                                            }
-                                        }}
+                                        fullWidth
                                     />
                                 </Box>
 

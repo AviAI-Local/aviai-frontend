@@ -13,11 +13,11 @@ export interface HistoryActionMenuProps {
 }
 
 const actions = [
-    // {
-    //     key: 'record',
-    //     label: 'Open record',
-    //     icon: <OpenInNew fontSize='small' sx={{ mr: 1, color: 'text.secondary' }} />
-    // },
+    {
+        key: 'record',
+        label: 'Open record',
+        icon: <OpenInNew fontSize='small' sx={{ mr: 1, color: 'text.secondary' }} />
+    },
     {
         key: 'transcript',
         label: 'Transcript',
@@ -75,6 +75,7 @@ function HistoryActionMenu({ anchorEl, handleMenuClose, conversationHistoryId, r
     const renderActions = useCallback(
         () =>
             actions
+                .filter((action) => action.key !== 'record' || recording)
                 .map((action) => {
                     const handleClick = async () => {
                         handleMenuClose()

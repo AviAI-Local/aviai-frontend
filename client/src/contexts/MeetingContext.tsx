@@ -255,53 +255,53 @@ function MeetingProvider({ children }: { children: ReactNode }) {
     //     console.log('🛑 Recording stopped')
     // }
 
-    const startAudioRecording = async () => {
-        // Get microphone stream for recording
-        let micStream: MediaStream
-        try {
-            micStream = await navigator.mediaDevices.getUserMedia({ audio: true })
-        } catch (err) {
-            console.error('❌ Could not access microphone:', err)
-            return
-        }
+    // const startAudioRecording = async () => {
+    //     // Get microphone stream for recording
+    //     let micStream: MediaStream
+    //     try {
+    //         micStream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    //     } catch (err) {
+    //         console.error('❌ Could not access microphone:', err)
+    //         return
+    //     }
 
-        if (micStream.getAudioTracks().length === 0) {
-            console.error('❌ No audio tracks to record')
-            return
-        }
+    //     if (micStream.getAudioTracks().length === 0) {
+    //         console.error('❌ No audio tracks to record')
+    //         return
+    //     }
 
-        const recorder = new RecordRTC(micStream, {
-            type: 'audio',
-            mimeType: 'audio/wav',
-            recorderType: RecordRTC.StereoAudioRecorder,
-            numberOfAudioChannels: 2
-        })
+    //     const recorder = new RecordRTC(micStream, {
+    //         type: 'audio',
+    //         mimeType: 'audio/wav',
+    //         recorderType: RecordRTC.StereoAudioRecorder,
+    //         numberOfAudioChannels: 2
+    //     })
 
-        recorderRef.current = recorder
-        recorder.startRecording()
-        setIsRecord(true)
-        console.log('✅ Recording started')
-    }
+    //     recorderRef.current = recorder
+    //     recorder.startRecording()
+    //     setIsRecord(true)
+    //     console.log('✅ Recording started')
+    // }
 
-    const stopAudioRecording = async () => {
-        if (!recorderRef.current) return
+    // const stopAudioRecording = async () => {
+    //     if (!recorderRef.current) return
 
-        recorderRef.current.stopRecording(async () => {
-            const blob = recorderRef.current?.getBlob()
-            if (blob) {
-                const file = new File([blob], 'audio.wav', { type: blob.type })
+    //     recorderRef.current.stopRecording(async () => {
+    //         const blob = recorderRef.current?.getBlob()
+    //         if (blob) {
+    //             const file = new File([blob], 'audio.wav', { type: blob.type })
 
-                // ✅ Trigger upload asynchronously, outside the sync callback
-                uploadRecording(config.settings.roomName, file)
-                    .then(() => console.log('✅ Upload complete'))
-                    .catch((err) => console.error('❌ Upload failed:', err))
-            }
+    //             // ✅ Trigger upload asynchronously, outside the sync callback
+    //             uploadRecording(config.settings.roomName, file)
+    //                 .then(() => console.log('✅ Upload complete'))
+    //                 .catch((err) => console.error('❌ Upload failed:', err))
+    //         }
 
-            setRecording(true)
-            setIsRecord(false)
-            console.log('🛑 Recording stopped')
-        })
-    }
+    //         setRecording(true)
+    //         setIsRecord(false)
+    //         console.log('🛑 Recording stopped')
+    //     })
+    // }
 
     // const toggleRecordingVideo = async () => {
     //     const shouldStart = !isRecord
@@ -352,8 +352,8 @@ function MeetingProvider({ children }: { children: ReactNode }) {
             elapsedTime,
             isRecord,
             setIsRecord,
-            startAudioRecording,
-            stopAudioRecording,
+            // startAudioRecording,
+            // stopAudioRecording,
             startVideoRecording,
             stopVideoRecording,
             recording, 
@@ -369,8 +369,8 @@ function MeetingProvider({ children }: { children: ReactNode }) {
             toggleCamera,
             elapsedTime,
             showTranscript,
-            isRecord,
-            stopAudioRecording,
+            // isRecord,
+            // stopAudioRecording,
             startVideoRecording,
             stopVideoRecording,
             showNote,

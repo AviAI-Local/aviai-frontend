@@ -78,6 +78,12 @@ function ProfileForm({ initialData, onSave, onCancel }: ProfileFormProps) {
                                     label="First Name"
                                     value={values.firstName}
                                     onChange={handleChange}
+                                    size='small'
+                                    sx={{
+                                            '& .MuiInputBase-input': {
+                                                paddingY: '12px'
+                                            }
+                                        }}
                                     onBlur={handleBlur}
                                     error={touched.firstName && Boolean(errors.firstName)}
                                     helperText={touched.firstName && errors.firstName}
@@ -87,6 +93,12 @@ function ProfileForm({ initialData, onSave, onCancel }: ProfileFormProps) {
                                 <TextFormInput
                                     name="lastName"
                                     label="Last Name"
+                                    size='small'
+                                    sx={{
+                                            '& .MuiInputBase-input': {
+                                                paddingY: '12px'
+                                            }
+                                        }}
                                     value={values.lastName}
                                     onChange={handleChange}
                                     onBlur={handleBlur}
@@ -104,6 +116,12 @@ function ProfileForm({ initialData, onSave, onCancel }: ProfileFormProps) {
                                     label="Email"
                                     value={values.email}
                                     disabled
+                                    size='small'
+                                    sx={{
+                                            '& .MuiInputBase-input': {
+                                                paddingY: '12px'
+                                            }
+                                        }}
                                     helperText="Email cannot be changed"
                                 />
                             </Box>
@@ -111,6 +129,12 @@ function ProfileForm({ initialData, onSave, onCancel }: ProfileFormProps) {
                                 <TextFormInput
                                     name="role"
                                     label="Role"
+                                    size='small'
+                                    sx={{
+                                            '& .MuiInputBase-input': {
+                                                paddingY: '12px'
+                                            }
+                                        }}
                                     value={values.role}
                                     disabled
                                     helperText="Role cannot be changed"
@@ -118,13 +142,7 @@ function ProfileForm({ initialData, onSave, onCancel }: ProfileFormProps) {
                             </Box>
                             <Box sx={{ flex: 1 }}>
                                 <DropdownFormInput
-                                sx={{
-                                    '& .MuiInputBase-input': {
-                                      paddingY: '1rem',
-                                
-
-                                    },
-                                  }}
+                                    fullWidth
                                     name="major"
                                     label="Major"
                                     options={majorOptions}
