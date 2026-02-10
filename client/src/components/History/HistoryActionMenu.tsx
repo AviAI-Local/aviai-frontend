@@ -23,11 +23,11 @@ const actions = [
         label: 'Transcript',
         icon: <SaveAlt fontSize='small' sx={{ mr: 1, color: 'text.secondary' }} />
     },
-    {
-        key: 'emotion',
-        label: 'Emotion analysis',
-        icon: <SaveAlt fontSize='small' sx={{ mr: 1, color: 'text.secondary' }} />
-    }, 
+    // {
+    //     key: 'emotion',
+    //     label: 'Emotion analysis',
+    //     icon: <SaveAlt fontSize='small' sx={{ mr: 1, color: 'text.secondary' }} />
+    // }, 
     {
         key: 'performance',
         label: 'Performance analysis',
@@ -76,6 +76,7 @@ function HistoryActionMenu({ anchorEl, handleMenuClose, conversationHistoryId, r
         () =>
             actions
                 .filter((action) => action.key !== 'record' || recording)
+                .filter((action) => action.key !== 'emotion')
                 .map((action) => {
                     const handleClick = async () => {
                         handleMenuClose()

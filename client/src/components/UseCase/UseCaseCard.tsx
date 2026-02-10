@@ -41,12 +41,12 @@ function UseCaseCard({ data }: UseCaseCardProps) {
     }
 
     const handleOpen = () => {
-        window.open(`https://ba4489b6ca0a.ngrok-free.app/usecases/${data.id}`, '_blank', 'noopener,noreferrer')
+        window.open(`http://localhost:3000/scenarios/${data.id}`, '_blank', 'noopener,noreferrer')
         setOpen(false)
     }
 
     const handleCopyLink = () => {
-        navigator.clipboard.writeText(`https://ba4489b6ca0a.ngrok-free.app/usecases/${data.id}`)
+        navigator.clipboard.writeText(`http://localhost:3000/scenarios/${data.id}`)
     }
 
     useEffect(() => {
