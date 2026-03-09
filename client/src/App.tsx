@@ -10,6 +10,7 @@ import { UserProvider } from './contexts/UserContext'
 import { routes } from './routes'
 import { NotificationProvider } from './contexts/NotificationContext'
 import { DirtyFormProvider } from './contexts/DirtyFormContext'
+import { PromptProvider } from './contexts/PromptContext'
 
 function AppRoutes() {
     const routing = useRoutes(routes)
@@ -25,11 +26,13 @@ function App() {
                         <DirtyFormProvider>
                             <LoadingProvider>
                                 <GlobalFonts />
-                                <UseCasesProvider>
-                                    <SessionProvider>
-                                        <AppRoutes />
-                                    </SessionProvider>
-                                </UseCasesProvider>
+                                <PromptProvider>
+                                    <UseCasesProvider>
+                                        <SessionProvider>
+                                            <AppRoutes />
+                                        </SessionProvider>
+                                    </UseCasesProvider>
+                                </PromptProvider>
                             </LoadingProvider>
                         </DirtyFormProvider>
                     </ThemeProvider>

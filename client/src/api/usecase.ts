@@ -64,29 +64,25 @@ export async function deleteUseCase(id: string) {
 
 export const createUseCase = async (
     name: string,
-    summary: string,
+    category: string,
+    scenarioText: string,
+    promptId: string,
     personalCharacteristic: string,
     attitude: string,
     interviewRule: string,
-    characterName: string,
-    gender: string,
-    industry: string,
-    scenario: string,
-    createdBy: string
+    createdBy: string,
 ) => {
     const res = await serverAPI.post(
         '/scenario',
         {
             scenario_name: name,
-            scenario_summary: summary,
+            prompt_id: promptId,
+            created_by: createdBy,
+            scenario_text: scenarioText,
+            category: category,
             personal_characteristics: personalCharacteristic,
             attitude_in_interview: attitude,
-            rule_interview: interviewRule,
-            character_name: characterName,
-            character_gender: gender,
-            created_by: createdBy,
-            industry: industry,
-            scenario_text: scenario
+            rule_interview: interviewRule
         },
         {
             headers: {

@@ -1,8 +1,8 @@
 import { Stack } from '@mui/material'
 import KeyValuePair from './KeyValuePair'
 import type { UseCaseData } from '../../types/usecase'
-import { capitalize } from '../../utils/format'
 import modelFemaleImg from '../../assets/model_female.svg'
+
 export interface DetailsSectionProps {
     useCase: UseCaseData
 }
@@ -13,9 +13,7 @@ function DetailsSection({ useCase }: DetailsSectionProps) {
             <Stack direction='column' spacing={4} width='60%'>
                 <Stack direction='column' spacing={3}>
                     <Stack direction='row' spacing={20}>
-                        <KeyValuePair label='Character Name' value={useCase.characterName} variant='primary' />
-                        <KeyValuePair label='Gender' value={capitalize(useCase.gender)} variant='primary' />
-                        <KeyValuePair label='Industry' value={useCase.industry} variant='chip' />
+                        <KeyValuePair label='Category' value={useCase.category} variant='chip' />
                     </Stack>
 
                     <KeyValuePair

@@ -4,16 +4,13 @@ import type { Note } from '../types/common'
 
 export function mapUseCase(item: any): UseCaseData {
     return {
-        id: item.usecase_id,
-        name: item.usecase_name,
+        id: item.scenario_id,
+        name: item.scenario_name,
         personalCharacteristic: item.personal_characteristics,
         scenario: item.scenario_text,
-        summary: item.usecase_summary,
         attitude: item.attitude_in_interview,
-        characterName: item.character_name,
         createdAt: item.created_at,
-        gender: item.character_gender,
-        industry: item.industry,
+        category: item.category,
         interviewRule: item.rule_interview,
         createdBy: item.created_by
     }

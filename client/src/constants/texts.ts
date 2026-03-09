@@ -1,6 +1,7 @@
 export const Steps = [
-    { title: 'Upload a use case file', subtitle: 'Select and upload the file of your choice' },
-    { title: 'Edit & Create', subtitle: 'Edit specific information for each case' }
+    { title: 'Choose Template', subtitle: 'Select category and prompt template' },
+    { title: 'Processing', subtitle: 'Auto-generating fields from template' },
+    { title: 'Edit & Create', subtitle: 'Fill in the details for your use case' }
 ]
 
 export const majorOptions = [{ value: 'Aviation', label: 'Aviation' }]

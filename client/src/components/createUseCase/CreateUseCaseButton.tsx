@@ -4,9 +4,8 @@ import DialogContent from '@mui/material/DialogContent'
 import CloseIcon from '@mui/icons-material/Close'
 import Typography from '@mui/material/Typography'
 import PlusIcon from '../UseCase/PlusIcon'
-import { Box, CircularProgress, Fade } from '@mui/material'
-import FileUploader from '../common/FileUploader'
-import { useRef, useState } from 'react'
+import { Box, Fade } from '@mui/material'
+import { useEffect, useRef, useState } from 'react'
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined'
 import type { UseCaseFormValues } from '../../types/usecase'
 import type { FormikProps, FormikValues } from 'formik'
@@ -14,30 +13,79 @@ import { useLoading } from '../../contexts/LoadingContext'
 import { createUseCase } from '../../api/usecase'
 import { useUseCasesContext } from '../../contexts/UseCasesContext'
 import { Steps } from '../../constants/texts'
-import { FileDownloadRounded } from '@mui/icons-material'
 import CreateUseCaseForm from './CreateUseCaseForm'
 import { useUserContext } from '../../contexts/UserContext'
+import type { PromptTemplate } from '../../types/prompt'
+import ChooseTemplate from './ChooseTemplate'
+import FileUploader from '../common/FileUploader'
+import { FileDownloadRounded } from '@mui/icons-material'
+import { usePromptContext } from '../../contexts/PromptContext'
 
 function CreateUseCaseButton() {
     const [open, setOpen] = useState(false)
     const [activeStep, setActiveStep] = useState(0)
     const [data, setData] = useState<UseCaseFormValues | undefined>()
+    const [categories, setCategories] = useState<string[]>([])
+    const [selectedCategory, setSelectedCategory] = useState('')
+    const [filteredTemplates, setFilteredTemplates] = useState<PromptTemplate[]>([])
+    const [selectedTemplate, setSelectedTemplate] = useState<PromptTemplate | null>(null)
     const formikRef = useRef<FormikProps<UseCaseFormValues>>(null)
-    const { loading, setLoading } = useLoading()
+    const { setLoading } = useLoading()
     const { handleUpdateUseCases } = useUseCasesContext()
+    const { prompts } = usePromptContext()
     const { user } = useUserContext()
 
     if (!user) {
         throw new Error('User is not authenticated')
     }
 
+    useEffect(() => {
+        if (open) {
+            const uniqueCategories = [...new Set(prompts.map((t) => t.category))]
+            setCategories(uniqueCategories)
+            if (uniqueCategories.length > 0) {
+                setSelectedCategory(uniqueCategories[0])
+            }
+        }
+    }, [open])
+
+    useEffect(() => {
+        const filtered = prompts.filter((t) => t.category === selectedCategory)
+        setFilteredTemplates(filtered)
+        if (filtered.length > 0) {
+            setSelectedTemplate(filtered[0])
+        } else {
+            setSelectedTemplate(null)
+        }
+    }, [selectedCategory, prompts])
+
+    useEffect(() => {
+        console.log("Template: ", selectedTemplate)
+    }, [selectedTemplate])
+
     const handleClickOpen = () => {
         setOpen(true)
     }
+
     const handleClose = () => {
         setOpen(false)
         setActiveStep(0)
         setData(undefined)
+        setSelectedCategory('')
+        setSelectedTemplate(null)
+    }
+
+    const handleNextStep = async () => {
+        if (activeStep === 0 && selectedTemplate) {
+            setActiveStep(1)
+
+            const template = filteredTemplates.find((t) => t.id === selectedTemplate.id)
+            if (template) {
+                setSelectedTemplate(template)
+            }
+        } else if (activeStep === 1) {
+            setActiveStep(2)
+        }
     }
 
     const handleDownload = () => {
@@ -47,32 +95,30 @@ function CreateUseCaseButton() {
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
+
     }
 
     const handleSubmit = async (values: FormikValues, props: any) => {
         const { setSubmitting } = props
-        const summary = values.summary ?? ''
-        const interviewRule = values.interviewRule ?? '  '
-        const userId = user.id 
-        console.log(values)
+        const userId = user.id
+        setLoading(true)
+
         try {
             const res = await createUseCase(
                 values.name,
-                summary,
+                selectedTemplate?.category ?? '',
+                values.scenario,
+                selectedTemplate?.id ?? '',
                 values.personalCharacteristic,
                 values.attitude,
-                interviewRule,
-                values.characterName,
-                'Female',
-                values.industry,
-                values.scenario,
+                values.interviewRule,
                 userId
             )
             console.log(res)
             handleUpdateUseCases()
             handleClose()
         } catch (error: any) {
-            console.log(error.response.data.detail)
+            console.log(error.response?.data?.detail)
         } finally {
             setSubmitting(false)
             setLoading(false)
@@ -81,7 +127,7 @@ function CreateUseCaseButton() {
 
     return (
         <>
-            <PlusIcon title={'New Case'} onClick={handleClickOpen} />
+            <PlusIcon title={'New Scenario'} onClick={handleClickOpen} />
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -111,7 +157,7 @@ function CreateUseCaseButton() {
                             fontSize: 28
                         }}
                     >
-                        Add New Use Case
+                        Add New Scenario
                     </Typography>
                     <HighlightOffOutlinedIcon
                         aria-label='close'
@@ -141,140 +187,92 @@ function CreateUseCaseButton() {
                         position: 'relative'
                     }}
                 >
-                    {loading ? (
+
+                    <>
                         <Box
                             sx={{
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                height: '100%',
-                                width: '100%',
                                 display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                zIndex: 10,
-                                borderRadius: 2
+                                flexDirection: 'column',
+                                gap: 2
                             }}
                         >
-                            <CircularProgress />
-                        </Box>
-                    ) : (
-                        <>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: 2
-                                }}
+                            <CustomStepIcon activeStep={activeStep} />
+
+
+                            <Fade
+                                in={activeStep === 0}
+                                timeout={{ enter: 400, exit: 200 }}
+                                easing={{ enter: 'ease-out', exit: 'ease-in' }}
+                                unmountOnExit
                             >
-                                <CustomStepIcon activeStep={activeStep} />
+                                <Box sx={{ paddingX: 3 }}>
+                                    <ChooseTemplate
+                                        categories={categories}
+                                        setCategories={setCategories}
+                                        filteredTemplates={filteredTemplates}
+                                        setSelectedCategory={setSelectedCategory}
+                                        selectedCategory={selectedCategory}
+                                        setSelectedTemplate={setSelectedTemplate}
+                                        selectedTemplate={selectedTemplate}
+                                    />
+                                </Box>
+                            </Fade>
 
-                                <Fade in={activeStep === 0} timeout={500} unmountOnExit>
+                            <Fade
+                                in={activeStep === 1}
+                                timeout={{ enter: 400, exit: 200 }}
+                                easing={{ enter: 'ease-out', exit: 'ease-in' }}
+                                unmountOnExit
+                            >
+                                <Box>
                                     <Box
+                                        onClick={handleDownload}
                                         sx={{
                                             display: 'flex',
-                                            flexDirection: 'column',
-                                            gap: 1
+                                            width: 'fit-content',
+                                            alignItems: 'center',
+                                            color: '#9FA7BE',
+                                            cursor: 'pointer',
+                                            '&:hover': {
+                                                color: 'primary.main'
+                                            }
                                         }}
                                     >
-                                        <Box
-                                            onClick={handleDownload}
-                                            sx={{
-                                                display: 'flex',
-                                                width: 'fit-content',
-                                                alignItems: 'center',
-                                                color: '#9FA7BE',
-                                                cursor: 'pointer',
-                                                '&:hover': {
-                                                    color: 'primary.main'
-                                                }
-                                            }}
-                                        >
-                                            <FileDownloadRounded sx={{ fontSize: 12 }} />
-
-                                            <Typography
-                                                sx={{
-                                                    fontWeight: 400,
-                                                    fontSize: 12
-                                                }}
-                                            >
-                                                Download Template
-                                            </Typography>
-                                        </Box>
-                                        <FileUploader setData={setData} setActiveStep={setActiveStep} />
-                                    </Box>
-                                </Fade>
-
-                                <Fade in={activeStep === 1} timeout={500} unmountOnExit>
-                                    <Box
-                                        sx={{
-                                            paddingX: 3
-                                        }}
-                                    >
-                                        <CreateUseCaseForm
-                                            handleSubmit={handleSubmit}
-                                            formRef={formikRef}
-                                            data={data}
-                                        />
-                                    </Box>
-                                </Fade>
-
-                                {activeStep == 1 && (
-                                    <Box
-                                        sx={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between'
-                                        }}
-                                    >
+                                        <FileDownloadRounded sx={{ fontSize: 12 }} />
                                         <Typography
-                                            onClick={() => setActiveStep(activeStep - 1)}
                                             sx={{
                                                 fontWeight: 400,
-                                                fontSize: 14,
-                                                textDecoration: 'underline',
-                                                color: '#9FA7BE',
-                                                cursor: 'pointer',
-                                                '&:hover': {
-                                                    color: 'primary.main'
-                                                }
+                                                fontSize: 12
                                             }}
                                         >
-                                            Back
-                                        </Typography>
-
-                                        <Typography
-                                            onClick={() => formikRef.current?.submitForm()}
-                                            sx={{
-                                                fontWeight: 400,
-                                                fontSize: 14,
-                                                textDecoration: 'underline',
-                                                color: '#9FA7BE',
-                                                cursor: 'pointer',
-                                                '&:hover': {
-                                                    color: 'primary.main'
-                                                }
-                                            }}
-                                        >
-                                            Finish
+                                            Download Template
                                         </Typography>
                                     </Box>
-                                )}
-                            </Box>
+                                    <FileUploader setData={setData} setActiveStep={setActiveStep} />
+                                </Box>
+                            </Fade>
 
-                            {activeStep == 0 && (
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        position: 'relative'
-                                    }}
-                                >
+                            <Fade
+                                in={activeStep === 2}
+                                timeout={{ enter: 400, exit: 200 }}
+                                easing={{ enter: 'ease-out', exit: 'ease-in' }}
+                                unmountOnExit
+                            >
+                                <Box sx={{ paddingX: 3 }}>
+                                    <CreateUseCaseForm
+                                        handleSubmit={handleSubmit}
+                                        formRef={formikRef}
+                                        data={data}
+                                    />
+                                </Box>
+                            </Fade>
+
+
+                            <Box sx={{ display: 'flex', justifyContent: activeStep > 0 ? 'space-between' : 'flex-end', paddingX: 3 }}>
+                                {activeStep > 0 ?
                                     <Typography
-                                        onClick={() => setActiveStep(activeStep + 1)}
+                                        onClick={() => setActiveStep(activeStep - 1)}
                                         sx={{
-                                            position: 'absolute',
-                                            right: 10,
-                                            bottom: 0,
                                             fontWeight: 400,
                                             fontSize: 14,
                                             textDecoration: 'underline',
@@ -285,12 +283,29 @@ function CreateUseCaseButton() {
                                             }
                                         }}
                                     >
-                                        Skip
+                                        Back
                                     </Typography>
-                                </Box>
-                            )}
-                        </>
-                    )}
+                                    : null
+                                }
+
+                                <Typography
+                                    onClick={() => activeStep === 2 ? formikRef.current?.submitForm() : handleNextStep()}
+                                    sx={{
+                                        fontWeight: 400,
+                                        fontSize: 14,
+                                        textDecoration: 'underline',
+                                        color: '#9FA7BE',
+                                        cursor: 'pointer',
+                                        '&:hover': {
+                                            color: 'primary.main'
+                                        }
+                                    }}
+                                >
+                                    {activeStep === 2 ? "Finish" : "Next"}
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </>
                 </DialogContent>
             </Dialog>
         </>
@@ -304,8 +319,15 @@ interface CustomStepIconProps {
 }
 
 function CustomStepIcon({ activeStep }: CustomStepIconProps) {
+    const stepIndex = activeStep === 2 ? 2 : activeStep
+
     return (
-        <Fade key={activeStep} in={true} timeout={300}>
+        <Fade
+            key={activeStep}
+            in={true}
+            timeout={{ enter: 350, exit: 150 }}
+            easing={{ enter: 'ease-out', exit: 'ease-in' }}
+        >
             <Box
                 sx={{
                     display: 'flex',
@@ -324,15 +346,15 @@ function CustomStepIcon({ activeStep }: CustomStepIconProps) {
                         color: 'white'
                     }}
                 >
-                    {activeStep + 1}
+                    {stepIndex + 1}
                 </Box>
 
                 <Box>
                     <Typography variant='body1' fontWeight='bold'>
-                        {Steps[activeStep].title}
+                        {Steps[stepIndex]?.title}
                     </Typography>
                     <Typography variant='caption' color='text.secondary'>
-                        {Steps[activeStep].subtitle}
+                        {Steps[stepIndex]?.subtitle}
                     </Typography>
                 </Box>
             </Box>

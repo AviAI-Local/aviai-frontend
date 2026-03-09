@@ -33,8 +33,9 @@ function UseCaseCard({ data }: UseCaseCardProps) {
         const res = await createNewSession(data.id, user.id)
         setSession({
             id: res.session_id,
-            conversionHistory: res.conversation_history,
-            usecaseId: data.id
+            conversationHistory: res.conversation_history,
+            scenarioId: data.id,
+            scenarioName: res.scenario_name
         })
         navigate(`/interview/${res.session_id}`)
         setUsecase(data)
@@ -60,6 +61,10 @@ function UseCaseCard({ data }: UseCaseCardProps) {
             document.removeEventListener('click', handleClick)
         }
     }, [])
+
+    useEffect(() => {
+        console.log("card: ", data)
+    })
 
     return (
         <Box
@@ -166,14 +171,14 @@ function UseCaseCard({ data }: UseCaseCardProps) {
                 {data.name}
             </Typography>
 
-            <Typography
+            {/* <Typography
                 sx={{
                     fontWeight: 400,
                     fontSize: 16
                 }}
             >
                 {data.characterName}, {capitalize(data.gender)}
-            </Typography>
+            </Typography> */}
 
             <Typography
                 sx={{
@@ -186,7 +191,7 @@ function UseCaseCard({ data }: UseCaseCardProps) {
                     textOverflow: 'ellipsis'
                 }}
             >
-                {data.summary === '' ? data.scenario : data.summary}
+                { data.scenario }
             </Typography>
 
             <Divider />
@@ -205,9 +210,9 @@ function UseCaseCard({ data }: UseCaseCardProps) {
                     }}
                 >
                     <Chip
-                        label={data.industry}
+                        label={data.category}
                         sx={{
-                            ...getColorForChip(data.industry),
+                            ...getColorForChip(data.category),
                             width: 'fit-content',
                             paddingX: 0.5
                         }}
