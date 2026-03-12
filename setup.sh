@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+# set -euo pipefail  # disabled for debugging (script will no longer exit on errors)
 
 # Colors for better output
 RED='\033[0;31m'
@@ -10,6 +10,14 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 REPO_URL="https://github.com/AviAI-Local/aviai-frontend.git"
+
+die() {
+    echo -e "${RED}$*${NC}"
+    read -p "Press Enter to close..."
+    exit 1
+}
+
+cd "$(dirname "$0")"
 
 echo -e "${GREEN}=== Frontend setup helper ===${NC}\n"
 
@@ -61,33 +69,23 @@ else
                 if command -v brew >/dev/null 2>&1; then
                     brew install git
                 else
-                    echo -e "${RED}Homebrew not found. Please install it first:${NC}"
-                    echo "    /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
-                    exit 1
+                    die "Homebrew not found. Please install it first:\n    /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
                 fi
                 ;;
             linux)
                 install_package_linux git
                 ;;
             windows)
-                echo -e "${YELLOW}Please download and install Git from: https://git-scm.com/download/win${NC}"
-                echo "   After installing, restart this terminal and run the script again."
-                exit 1
+                die "Please download and install Git from: https://git-scm.com/download/win\n   After installing, restart this terminal and run the script again."
                 ;;
             *)
-                echo -e "${RED}Automatic Git installation not supported on this OS.${NC}"
-                echo "   Install from: https://git-scm.com/downloads"
-                exit 1
+                die "Automatic Git installation not supported on this OS.\n   Install from: https://git-scm.com/downloads"
                 ;;
         esac
-        command -v git >/dev/null 2>&1 || {
-            echo -e "${RED}Git still not found after installation. Open a new terminal and try again.${NC}"
-            exit 1
-        }
+        command -v git >/dev/null 2>&1 || die "Git still not found after installation. Open a new terminal and try again."
         echo -e "${GREEN}✓ git installed: $(git --version)${NC}\n"
     else
-        echo -e "${RED}Git is required. Install it from https://git-scm.com/downloads and re-run this script.${NC}"
-        exit 1
+        die "Git is required. Install it from https://git-scm.com/downloads and re-run this script."
     fi
 fi
 
@@ -106,8 +104,7 @@ else
                 if command -v brew >/dev/null 2>&1; then
                     brew install --cask visual-studio-code
                 else
-                    echo -e "${YELLOW}Homebrew not found. Download VS Code from: https://code.visualstudio.com/Download${NC}"
-                    exit 1
+                    die "Homebrew not found. Download VS Code from: https://code.visualstudio.com/Download"
                 fi
                 ;;
             linux)
@@ -122,8 +119,7 @@ https://packages.microsoft.com/repos/code stable main" \
                 elif command -v snap >/dev/null 2>&1; then
                     sudo snap install --classic code
                 else
-                    echo -e "${YELLOW}Could not install automatically. Download from: https://code.visualstudio.com/Download${NC}"
-                    exit 1
+                    die "Could not install automatically. Download from: https://code.visualstudio.com/Download"
                 fi
                 ;;
             windows)
@@ -148,33 +144,32 @@ fi
 # ────────────────────────────────────────────────
 echo -e "${BLUE}--- Checking repository ---${NC}"
 
-# If we're already inside the repo, just verify the remote is reachable
-if git -C "$(pwd)" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-    echo -e "${GREEN}✓ Already inside a git repository${NC}"
+# If aviai-frontend already exists, cd into it; otherwise clone it first
+if [[ -d "aviai-frontend" ]]; then
+    echo -e "${GREEN}✓ 'aviai-frontend' directory found${NC}"
     echo -n "   Checking remote connectivity... "
     if git ls-remote --exit-code "$REPO_URL" HEAD >/dev/null 2>&1; then
         echo -e "${GREEN}remote reachable${NC}\n"
     else
         echo -e "${YELLOW}remote not reachable (offline or no access) — continuing anyway${NC}\n"
     fi
+    cd aviai-frontend
 else
-    echo -e "${YELLOW}⚠️  Not inside the project repository${NC}"
+    echo -e "${YELLOW}⚠️  'aviai-frontend' not found${NC}"
     echo "   Remote: $REPO_URL"
     read -p "   Clone the repository here? (y/N) " -n 1 -r; echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo -n "   Checking remote connectivity... "
         if git ls-remote --exit-code "$REPO_URL" HEAD >/dev/null 2>&1; then
             echo -e "${GREEN}OK${NC}"
-            git clone "$REPO_URL" .
-            echo -e "${GREEN}✓ Repository cloned${NC}\n"
+            git clone "$REPO_URL" aviai-frontend
+            echo -e "${GREEN}✓ Repository cloned into aviai-frontend${NC}\n"
+            cd aviai-frontend
         else
-            echo -e "${RED}Cannot reach $REPO_URL${NC}"
-            echo "   Check your internet connection or VPN access, then re-run this script."
-            exit 1
+            die "Cannot reach $REPO_URL\n   Check your internet connection or VPN access, then re-run this script."
         fi
     else
-        echo -e "${RED}Repository is required. Exiting.${NC}"
-        exit 1
+        die "Repository is required. Exiting."
     fi
 fi
 
@@ -193,9 +188,7 @@ if ! command -v npm >/dev/null 2>&1 || ! command -v node >/dev/null 2>&1; then
                 if command -v brew >/dev/null 2>&1; then
                     brew install node
                 else
-                    echo -e "${RED}Homebrew not found. Please install it first:${NC}"
-                    echo "    /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
-                    exit 1
+                    die "Homebrew not found. Please install it first:\n    /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
                 fi
                 ;;
             linux)
@@ -203,26 +196,19 @@ if ! command -v npm >/dev/null 2>&1 || ! command -v node >/dev/null 2>&1; then
                 install_package_linux nodejs
                 ;;
             windows)
-                echo -e "${YELLOW}Please download and install Node.js from: https://nodejs.org/${NC}"
-                echo "   After installing, restart this terminal and run the script again."
-                exit 1
+                die "Please download and install Node.js from: https://nodejs.org/\n   After installing, restart this terminal and run the script again."
                 ;;
             *)
-                echo -e "${RED}Automatic installation not supported on this OS.${NC}"
-                echo "   Install from https://nodejs.org/"
-                exit 1
+                die "Automatic installation not supported on this OS.\n   Install from https://nodejs.org/"
                 ;;
         esac
-        command -v npm >/dev/null 2>&1 || {
-            echo -e "${RED}Still cannot find npm after installation. Open a new terminal and try again.${NC}"
-            exit 1
-        }
+        command -v npm >/dev/null 2>&1 || die "Still cannot find npm after installation. Open a new terminal and try again."
     else
         echo -e "\n${YELLOW}Skipping installation. You can install Node.js manually:${NC}"
         echo "  • Homebrew:      brew install node"
         echo "  • nvm:           https://github.com/nvm-sh/nvm"
         echo "  • Official site: https://nodejs.org/"
-        exit 1
+        die "Node.js is required. Exiting."
     fi
 fi
 
@@ -233,9 +219,7 @@ echo -e "${GREEN}✓ node found: $(node --version)${NC}\n"
 # 5. Install dependencies and start dev server
 # ────────────────────────────────────────────────
 if [[ ! -d "client" ]]; then
-    echo -e "${RED}Error: 'client' directory not found in the current location.${NC}"
-    echo "Please run this script from the project root directory."
-    exit 1
+    die "Error: 'client' directory not found in the current location.\nPlease run this script from the project root directory."
 fi
 
 echo "→ Entering client directory..."
@@ -253,3 +237,5 @@ echo ""
 npm run dev
 
 echo -e "${RED}Development server exited unexpectedly${NC}"
+
+read -p "Press Enter to close..."
