@@ -1,4 +1,5 @@
 import {
+    Backdrop,
     Checkbox,
     CircularProgress,
     IconButton,
@@ -7,7 +8,8 @@ import {
     TableCell,
     TableContainer,
     TableHead,
-    TableRow
+    TableRow,
+    Typography
 } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import { useCallback, useState } from 'react'
@@ -26,6 +28,7 @@ export interface HistoryTableProps {
 export default function HistoryTable({ sessions, useCaseMap }: HistoryTableProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const [menuRowIndex, setMenuRowIndex] = useState<number | null>(null)
+    const [downloadingLabel, setDownloadingLabel] = useState<string | null>(null)
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, index: number) => {
         setAnchorEl(event.currentTarget)
@@ -43,6 +46,16 @@ export default function HistoryTable({ sessions, useCaseMap }: HistoryTableProps
     )
 
     return (
+        <>
+        <Backdrop
+            open={Boolean(downloadingLabel)}
+            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.modal + 1, flexDirection: 'column', gap: 2 }}
+        >
+            <CircularProgress color='inherit' />
+            <Typography variant='body2' sx={{ fontWeight: 500 }}>
+                {downloadingLabel}
+            </Typography>
+        </Backdrop>
         <TableContainer>
             <Table>
                 <TableHead sx={{ fontWeight: '500' }}>
@@ -98,6 +111,7 @@ export default function HistoryTable({ sessions, useCaseMap }: HistoryTableProps
                                                     handleMenuClose={handleMenuClose}
                                                     conversationHistoryId={session.conversationHistory.id}
                                                     recording={recording}
+                                                    setDownloadingLabel={setDownloadingLabel}
                                                 />
                                             )}
                                         </>
@@ -111,5 +125,6 @@ export default function HistoryTable({ sessions, useCaseMap }: HistoryTableProps
                 </TableBody>
             </Table>
         </TableContainer>
+        </>
     )
 }

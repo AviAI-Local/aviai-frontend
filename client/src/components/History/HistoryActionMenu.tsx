@@ -1,5 +1,6 @@
-import { OpenInNew, SaveAlt } from '@mui/icons-material'
+import { FolderZip, OpenInNew, SaveAlt } from '@mui/icons-material'
 import { Menu, MenuItem } from '@mui/material'
+import JSZip from 'jszip'
 import { useCallback } from 'react'
 import { getConversationPDF, getEmotionAnalysis, getPerformanceAnalysis } from '../../api/session'
 import { downloadBase64PDF } from '../../utils/interview'
@@ -10,6 +11,7 @@ export interface HistoryActionMenuProps {
     handleMenuClose: () => void
     conversationHistoryId: string
     recording: string | null
+    setDownloadingLabel: (label: string | null) => void
 }
 
 const actions = [
@@ -32,27 +34,38 @@ const actions = [
         key: 'performance',
         label: 'Performance analysis',
         icon: <SaveAlt fontSize='small' sx={{ mr: 1, color: 'text.secondary' }} />
+    },
+    {
+        key: 'zip',
+        label: 'Download as ZIP',
+        icon: <FolderZip fontSize='small' sx={{ mr: 1, color: 'text.secondary' }} />
     }
 ]
 
-function HistoryActionMenu({ anchorEl, handleMenuClose, conversationHistoryId, recording }: HistoryActionMenuProps) {
+function HistoryActionMenu({ anchorEl, handleMenuClose, conversationHistoryId, recording, setDownloadingLabel }: HistoryActionMenuProps) {
     const { user } = useUserContext()
     if (!user) return
     const handleDownloadTranscript = async (conversationHistoryId: string) => {
         try {
+            setDownloadingLabel('Preparing transcript...')
             const { pdf_base64, filename } = await getConversationPDF(conversationHistoryId)
             downloadBase64PDF(pdf_base64, filename)
         } catch (err) {
             console.error('Failed to download transcript:', err)
+        } finally {
+            setDownloadingLabel(null)
         }
     }
 
     const handleDownloadEmotionAnalysis = async (conversationHistoryId: string) => {
         try {
+            setDownloadingLabel('Preparing emotion analysis...')
             const { pdf_base64, filename } = await getEmotionAnalysis(conversationHistoryId)
             downloadBase64PDF(pdf_base64, filename)
         } catch (err) {
             console.error('Failed to download emotion analysis:', err)
+        } finally {
+            setDownloadingLabel(null)
         }
     }
 
@@ -62,13 +75,53 @@ function HistoryActionMenu({ anchorEl, handleMenuClose, conversationHistoryId, r
         }
     }
 
+    const handleDownloadZip = async (conversationHistoryId: string) => {
+        try {
+            setDownloadingLabel('Preparing ZIP...')
+            const zip = new JSZip()
+            const [transcript, performance] = await Promise.allSettled([
+                getConversationPDF(conversationHistoryId),
+                getPerformanceAnalysis(conversationHistoryId, user.id)
+            ])
+
+            if (transcript.status === 'fulfilled') {
+                const { pdf_base64, filename } = transcript.value
+                const byteCharacters = atob(pdf_base64)
+                const byteArray = new Uint8Array(Array.from(byteCharacters, (c) => c.charCodeAt(0)))
+                zip.file(filename, byteArray)
+            }
+
+            if (performance.status === 'fulfilled') {
+                const { pdf_base64, filename } = performance.value
+                const byteCharacters = atob(pdf_base64)
+                const byteArray = new Uint8Array(Array.from(byteCharacters, (c) => c.charCodeAt(0)))
+                zip.file(filename, byteArray)
+            }
+
+            const blob = await zip.generateAsync({ type: 'blob' })
+            const link = document.createElement('a')
+            link.href = URL.createObjectURL(blob)
+            link.download = `session-${conversationHistoryId}.zip`
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+        } catch (err) {
+            console.error('Failed to download ZIP:', err)
+        } finally {
+            setDownloadingLabel(null)
+        }
+    }
+
     const handleDownloadPerformanceAnalysis = async (conversationHistoryId: string) => {
         try {
+            setDownloadingLabel('Preparing performance analysis...')
             console.log(conversationHistoryId)
             const { pdf_base64, filename } = await getPerformanceAnalysis(conversationHistoryId, user.id)
             downloadBase64PDF(pdf_base64, filename)
         } catch (err) {
             console.error('Failed to download performance analysis:', err)
+        } finally {
+            setDownloadingLabel(null)
         }
     }
 
@@ -91,6 +144,9 @@ function HistoryActionMenu({ anchorEl, handleMenuClose, conversationHistoryId, r
                         }
                         if (action.key === 'performance') {
                             await handleDownloadPerformanceAnalysis(conversationHistoryId)
+                        }
+                        if (action.key === 'zip') {
+                            await handleDownloadZip(conversationHistoryId)
                         }
                     }
 
