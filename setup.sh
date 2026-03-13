@@ -235,7 +235,12 @@ echo "(press Ctrl+C to stop)"
 echo ""
 
 npm run dev
+DEV_EXIT=$?
 
-echo -e "${RED}Development server exited unexpectedly${NC}"
+echo -e "${RED}Development server exited unexpectedly (exit code: $DEV_EXIT)${NC}"
+echo ""
+echo -e "${YELLOW}Last npm error output above. Working directory: $(pwd)${NC}"
+echo -e "${YELLOW}package.json scripts:${NC}"
+cat package.json 2>/dev/null | grep -A 10 '"scripts"' || echo "Could not read package.json"
 
 read -p "Press Enter to close..."
