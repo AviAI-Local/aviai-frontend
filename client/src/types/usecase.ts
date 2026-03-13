@@ -5,12 +5,9 @@ export interface UseCaseData {
     name: string
     personalCharacteristic: string
     scenario: string
-    summary?: string
     attitude: string
-    characterName: string
     createdAt: string
-    gender: string
-    industry: string
+    category: string
     interviewRule: string
     createdBy: string
 }
@@ -25,12 +22,8 @@ export type UseCaseContext = {
 
 export type UseCaseFormValues = {
     name: string
-    characterName: string
-    gender: string
     personalCharacteristic: string
     scenario: string
     attitude: string
-    summary?: string
-    industry: string
     interviewRule: string
 }

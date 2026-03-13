@@ -1,5 +1,5 @@
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined'
-import { Box, Typography } from '@mui/material'
+import { Box, CircularProgress, Typography } from '@mui/material'
 import { useDropzone } from 'react-dropzone'
 import { extractDocument } from '../../api/usecase'
 import { useState } from 'react'
@@ -37,11 +37,7 @@ function FileUploader({ setData, setActiveStep }: FileUploaderProps) {
                     name: res.scenario_name,
                     personalCharacteristic: res.personal_characteristics,
                     scenario: res.scenario,
-                    summary: res.scenario_summary,
                     attitude: res.attitude_in_interview,
-                    characterName: res.character_name,
-                    gender: res.gender,
-                    industry: '',
                     interviewRule: ''
                 })
                 setActiveStep((prev) => prev + 1)
@@ -73,15 +69,13 @@ function FileUploader({ setData, setActiveStep }: FileUploaderProps) {
         >
             <input {...getInputProps()} />
             {uploadedFile ? (
-                <Typography
-                    sx={{
-                        fontWeight: 400,
-                        fontSize: 18,
-                        color: 'black'
-                    }}
-                >
-                    Uploaded: {uploadedFile.name}
-                </Typography>
+                
+                <>
+                <CircularProgress />
+                    <Typography color='text.secondary'>
+                        Processing template...
+                    </Typography>
+                </>
             ) : (
                 <>
                     <CloudUploadOutlinedIcon sx={{ fontSize: 40, color: '#9FA7BE' }} />

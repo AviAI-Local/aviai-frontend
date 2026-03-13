@@ -8,9 +8,12 @@ import { useUseCasesContext } from '../contexts/UseCasesContext'
 import { useUserContext } from '../contexts/UserContext'
 import CreateUseCaseButton from '../components/createUseCase/CreateUseCaseButton'
 import { useEffect } from 'react'
+import CreatePromptButton from '../components/createPrompt/CreatePromptButton'
+import { usePromptContext } from '../contexts/PromptContext'
 
 function UseCaseList() {
     const { useCases } = useUseCasesContext()
+    const { prompts } = usePromptContext()
     const { user } = useUserContext()
 
     if (!user) {
@@ -41,7 +44,8 @@ function UseCaseList() {
                         }}
                     />
 
-                    {user.role === 'Admin' && <CreateUseCaseButton />}
+                    {(user.role === 'Admin' && prompts.length > 0) && <CreateUseCaseButton />}
+                    {user.role === 'Admin' && <CreatePromptButton />}
                     {/* <FilterIcon /> */}
                     <SortIcon />
                 </Box>
