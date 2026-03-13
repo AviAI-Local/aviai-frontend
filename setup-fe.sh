@@ -99,18 +99,49 @@ if command -v code >/dev/null 2>&1; then
     VSCODE_VERSION=$(code --version 2>/dev/null | head -1 || echo "unknown")
     echo -e "${GREEN}✓ VS Code ${VSCODE_VERSION} found${NC}\n"
 elif [[ "$OS" == "mac" && -x "$VSCODE_CLI" ]]; then
-    # VS Code installed but CLI not in PATH - add it temporarily
     export PATH="$PATH:$(dirname "$VSCODE_CLI")"
     VSCODE_VERSION=$(code --version 2>/dev/null | head -1 || echo "unknown")
     echo -e "${GREEN}✓ VS Code ${VSCODE_VERSION} found (app bundle)${NC}"
     echo -e "${YELLOW}  Tip: Add 'code' to PATH permanently via VS Code → Cmd+Shift+P → 'Shell Command: Install'${NC}\n"
 else
-    echo -e "${RED}✗ VS Code not found${NC}"
-    echo "Install VS Code:"
-    echo "  macOS:   brew install --cask visual-studio-code"
-    echo "  Ubuntu:  sudo snap install --classic code"
-    echo "  Windows: https://code.visualstudio.com/Download"
-    exit 1
+    echo -e "${YELLOW}⚠️  VS Code not found — installing now...${NC}"
+    case "$OS" in
+        mac)
+            if command -v brew >/dev/null 2>&1; then
+                brew install --cask visual-studio-code \
+                    || die "VS Code installation failed. Install manually:\n    brew install --cask visual-studio-code"
+                export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+            else
+                die "Homebrew not found. Please install it first:\n    /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+            fi
+            ;;
+        linux)
+            # Try snap first, fall back to apt
+            if command -v snap >/dev/null 2>&1; then
+                sudo snap install --classic code \
+                    || die "VS Code snap installation failed."
+            elif command -v apt-get >/dev/null 2>&1; then
+                curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+                    | gpg --dearmor | sudo tee /usr/share/keyrings/microsoft.gpg >/dev/null
+                echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] \
+https://packages.microsoft.com/repos/code stable main" \
+                    | sudo tee /etc/apt/sources.list.d/vscode.list
+                sudo apt-get update -qq && sudo apt-get install -y code \
+                    || die "VS Code apt installation failed."
+            else
+                die "Could not install VS Code automatically.\n   Install manually: https://code.visualstudio.com/Download"
+            fi
+            ;;
+        windows)
+            die "Please download and install VS Code from: https://code.visualstudio.com/Download\n   After installing, restart this terminal and run the script again."
+            ;;
+        *)
+            die "Automatic VS Code installation not supported on this OS.\n   Install from: https://code.visualstudio.com/Download"
+            ;;
+    esac
+    command -v code >/dev/null 2>&1 || die "VS Code still not found after installation. Open a new terminal and try again."
+    VSCODE_VERSION=$(code --version 2>/dev/null | head -1 || echo "unknown")
+    echo -e "${GREEN}✓ VS Code ${VSCODE_VERSION} installed${NC}\n"
 fi
 
 # ────────────────────────────────────────────────
@@ -118,7 +149,6 @@ fi
 # ────────────────────────────────────────────────
 echo -e "${BLUE}--- Checking repository ---${NC}"
 
-# If aviai-frontend already exists, cd into it; otherwise clone it first
 if [[ -d "aviai-frontend" ]]; then
     echo -e "${GREEN}✓ 'aviai-frontend' directory found${NC}"
     echo -n "   Checking remote connectivity... "
@@ -200,10 +230,7 @@ echo "→ Entering client directory..."
 cd client
 
 echo -e "\n${YELLOW}Installing dependencies...${NC}"
-npm install --ignore-scripts || {
-    echo -e "${RED}✗ npm install failed${NC}"
-    exit 1
-}
+npm install --ignore-scripts || die "npm install failed. Check the errors above and try again."
 
 echo -e "\n${GREEN}✓ Dependencies installed${NC}"
 
@@ -212,7 +239,3 @@ echo "(press Ctrl+C to stop)"
 echo ""
 
 npm run dev
-
-echo -e "${RED}Development server exited unexpectedly${NC}"
-
-read -p "Press Enter to close..."
