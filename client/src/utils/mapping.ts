@@ -1,6 +1,7 @@
 import type { ConversationContent, ConversationHistory, Session } from '../types/session'
 import type { UseCaseData } from '../types/usecase'
 import type { Note } from '../types/common'
+import type { PromptTemplate } from '../types/prompt'
 
 export function mapUseCase(item: any): UseCaseData {
     return {
@@ -54,5 +55,15 @@ export function mapNote(note: any): Note {
         sessionId: note.session_id,
         content: note.note_content,
         timestamp: note.timestamp
+    }
+}
+
+export function mapPrompt(item: any): PromptTemplate {
+    return {
+        id: item.template_id,
+        template_name: item.template_name,
+        category: item.category,
+        content: item.content,
+        createdAt: item.created_at
     }
 }

@@ -4,6 +4,7 @@ import { useLoading } from './LoadingContext'
 import { useUserContext } from './UserContext'
 import { useLocation } from 'react-router-dom'
 import { getPrompts } from '../api/prompt'
+import { create } from 'domain'
 
 const PromptContext = createContext<PromptContext | undefined>(undefined)
 
@@ -28,7 +29,8 @@ function PromptProvider({ children }: { children: ReactNode }) {
                     id: item.template_id,
                     template_name: item.template_name,
                     category: item.category,
-                    content: item.content
+                    content: item.content,
+                    createdAt: item.created_at
                 }))
                 setPrompts(data)
             } catch (err) {

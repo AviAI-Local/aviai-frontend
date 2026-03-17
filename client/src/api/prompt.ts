@@ -1,4 +1,5 @@
 import type { PromptTemplate } from "../types/prompt"
+import { mapPrompt } from "../utils/mapping"
 import { serverAPI } from "./axios"
 
 export const getPrompts = async (): Promise<PromptTemplate[]> => {
@@ -17,12 +18,15 @@ export const getPromptsByCategory = async (category: string): Promise<PromptTemp
     return []
 }
 
-export const getPromptById = async (id: string): Promise<PromptTemplate | null> => {
-    const res = await serverAPI.get(`/prompt/${id}`)
-    if (res.status === 200) {
-        return res.data
+export const getPromptById = async (id: string) => {
+    try {
+        const res = await serverAPI.get(`/prompt/${id}`)
+        if (res.status === 200) {
+            return mapPrompt(res.data)
+        }
+    } catch (err) {
+        throw err
     }
-    return null
 }
 
 export const createPrompt = async (
@@ -52,5 +56,33 @@ export const createPrompt = async (
         }
     } catch (err) {
         return err
+    }
+}
+
+export const updatePrompt = async (
+    data: PromptTemplate
+) => {
+    try {
+        const res = await serverAPI.put(`/prompt/${data.id}`, data, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        if (res.status === 200) {
+            return mapPrompt(res.data)
+        }
+    } catch (err) {
+        throw err
+    }
+}
+
+export const deletePrompt = async (id: string) => {
+    try {
+        const res = await serverAPI.delete(`/prompt/${id}`)
+        if (res.status === 200) {
+            return res.data
+        }
+    } catch (err) {
+        throw err
     }
 }

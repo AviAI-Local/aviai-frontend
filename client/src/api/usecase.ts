@@ -29,14 +29,11 @@ export async function updateUseCase(useCase: UseCaseData) {
     try {
         const res = await serverAPI.patch(`/scenario/${useCase.id}`, {
             usecase_name: useCase.name,
-            usecase_summary: useCase.summary,
             personal_characteristics: useCase.personalCharacteristic,
             attitude_in_interview: useCase.attitude,
             rule_interview: useCase.interviewRule,
-            character_name: useCase.characterName,
-            character_gender: useCase.gender,
             created_by: useCase.createdBy,
-            industry: useCase.industry,
+            category: useCase.category,
             scenario_text: useCase.scenario
         })
 

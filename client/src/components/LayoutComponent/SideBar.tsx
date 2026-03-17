@@ -9,9 +9,12 @@ import ProfileIcon from '../Icons/ProfileIcon'
 import Logo from '../Icons/Logo'
 import { useLocation } from 'react-router-dom'
 import { useUserContext } from '../../contexts/UserContext'
+import TranscriptIcon from '../Icons/TranscriptIcon'
+import ChatIcon from '../Icons/ChatIcon'
 
 function SideBar({ onNavigate }: { onNavigate: (path: string) => void }) {
     const location = useLocation()
+    const { user } = useUserContext()
     const { logout } = useUserContext()
     const isSelected = (path: string, exact: boolean = false) => {
         if (exact) {
@@ -45,6 +48,16 @@ function SideBar({ onNavigate }: { onNavigate: (path: string) => void }) {
                         selected={isSelected('/scenarios')}
                         onClick={() => onNavigate('/scenarios')}
                     />
+
+                    { user?.role === "Admin" ? 
+                    <SidebarItem
+                        Icon={ChatIcon}
+                        label='Prompt'
+                        selected={isSelected('/prompts')}
+                        onClick={() => onNavigate('/prompts')}
+                    />
+                    : null
+                    }
                     <SidebarItem
                         Icon={NoteIcon}
                         label='Notes'

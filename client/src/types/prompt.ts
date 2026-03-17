@@ -11,6 +11,7 @@ export type PromptTemplate = {
     template_name: string
     category: string
     content: string
+    createdAt?: string
 }
 
 export type PromptContext = {

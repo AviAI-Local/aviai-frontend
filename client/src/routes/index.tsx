@@ -10,6 +10,8 @@ import Interview from '../pages/InterviewV2'
 import History from '../pages/History'
 import Notes from '../pages/Notes'
 import Profile from '../pages/Profile'
+import Prompt from '../pages/Prompt'
+import PromptDetails from '../pages/PromptDetails'
 
 export const routes = [
     {
@@ -30,7 +32,9 @@ export const routes = [
             { path: '/interview/:id', element: <Interview /> },
             { path: '/history', element: <History /> },
             { path: '/notes', element: <Notes /> },
-            { path: '/profile', element: <Profile /> }
+            { path: '/profile', element: <Profile /> },
+            { path: '/prompts', element: <Prompt/>},
+            { path: '/prompts/:id', element: <PromptDetails /> },
         ]
     }
 ]
