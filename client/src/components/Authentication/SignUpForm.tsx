@@ -13,11 +13,13 @@ import TextFormInput from '../common/TextFormInput'
 import DropdownFormInput from '../common/DropdownFormInput'
 import { majorOptions } from '../../constants/texts'
 import FormErrorMessage from '../common/FormErrorMessage'
+import { useApiNotification } from '../../contexts/ApiNotificationContext'
 
 function SignUpForm({ onSwitchMode }: { onSwitchMode?: () => void }) {
     const { refetchUser } = useUserContext()
     const { loading, setLoading } = useLoading()
     const navigate = useNavigate()
+    const { addNotification } = useApiNotification()
 
     const validationSchema = Yup.object().shape({
         email: Yup.string()
@@ -34,10 +36,13 @@ function SignUpForm({ onSwitchMode }: { onSwitchMode?: () => void }) {
         setLoading(true)
         try {
             await signup(values.email, values.password, values.name, values.major)
+            addNotification('Sign up', 200)
             await refetchUser()
             navigate('/scenarios')
         } catch (error: any) {
-            if (error.response?.status === 400) {
+            const status = error.response?.status ?? 500
+            addNotification('Sign up', status)
+            if (status === 400) {
                 const message = error.response.data.detail
                 if (message.includes('email') || message.toLowerCase().includes('account')) {
                     setErrors({ email: message })
@@ -146,20 +151,22 @@ function SignUpForm({ onSwitchMode }: { onSwitchMode?: () => void }) {
                                     />
                                 </Box>
 
-                                <Button
-                                    fullWidth
-                                    sx={{
-                                        fontWeight: 'bold',
-                                        bgcolor: 'primary.main',
-                                        borderRadius: 3,
-                                        textTransform: 'none'
-                                    }}
-                                    variant='contained'
-                                    size='large'
-                                    type='submit'
-                                >
-                                    Sign up
-                                </Button>
+                                <Box>
+                                    <Button
+                                        fullWidth
+                                        sx={{
+                                            fontWeight: 'bold',
+                                            bgcolor: 'primary.main',
+                                            borderRadius: 3,
+                                            textTransform: 'none'
+                                        }}
+                                        variant='contained'
+                                        size='large'
+                                        type='submit'
+                                    >
+                                        Sign up
+                                    </Button>
+                                </Box>
                             </Stack>
                         </Form>
                     )}

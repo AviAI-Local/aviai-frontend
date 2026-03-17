@@ -5,6 +5,7 @@ import { useCallback } from 'react'
 import { getConversationPDF, getEmotionAnalysis, getPerformanceAnalysis } from '../../api/session'
 import { downloadBase64PDF } from '../../utils/interview'
 import { useUserContext } from '../../contexts/UserContext'
+import { useApiNotification } from '../../contexts/ApiNotificationContext'
 
 export interface HistoryActionMenuProps {
     anchorEl: HTMLElement | null
@@ -25,11 +26,6 @@ const actions = [
         label: 'Transcript',
         icon: <SaveAlt fontSize='small' sx={{ mr: 1, color: 'text.secondary' }} />
     },
-    // {
-    //     key: 'emotion',
-    //     label: 'Emotion analysis',
-    //     icon: <SaveAlt fontSize='small' sx={{ mr: 1, color: 'text.secondary' }} />
-    // }, 
     {
         key: 'performance',
         label: 'Performance analysis',
@@ -44,13 +40,17 @@ const actions = [
 
 function HistoryActionMenu({ anchorEl, handleMenuClose, conversationHistoryId, recording, setDownloadingLabel }: HistoryActionMenuProps) {
     const { user } = useUserContext()
+    const { addNotification } = useApiNotification()
     if (!user) return
+
     const handleDownloadTranscript = async (conversationHistoryId: string) => {
         try {
             setDownloadingLabel('Preparing transcript...')
             const { pdf_base64, filename } = await getConversationPDF(conversationHistoryId)
             downloadBase64PDF(pdf_base64, filename)
-        } catch (err) {
+            addNotification('Download Transcript', 200)
+        } catch (err: any) {
+            addNotification('Download Transcript', err?.response?.status ?? 500)
             console.error('Failed to download transcript:', err)
         } finally {
             setDownloadingLabel(null)
@@ -62,7 +62,9 @@ function HistoryActionMenu({ anchorEl, handleMenuClose, conversationHistoryId, r
             setDownloadingLabel('Preparing emotion analysis...')
             const { pdf_base64, filename } = await getEmotionAnalysis(conversationHistoryId)
             downloadBase64PDF(pdf_base64, filename)
-        } catch (err) {
+            addNotification('Download Emotion Analysis', 200)
+        } catch (err: any) {
+            addNotification('Download Emotion Analysis', err?.response?.status ?? 500)
             console.error('Failed to download emotion analysis:', err)
         } finally {
             setDownloadingLabel(null)
@@ -105,7 +107,9 @@ function HistoryActionMenu({ anchorEl, handleMenuClose, conversationHistoryId, r
             document.body.appendChild(link)
             link.click()
             document.body.removeChild(link)
-        } catch (err) {
+            addNotification('Download ZIP', 200)
+        } catch (err: any) {
+            addNotification('Download ZIP', err?.response?.status ?? 500)
             console.error('Failed to download ZIP:', err)
         } finally {
             setDownloadingLabel(null)
@@ -115,10 +119,11 @@ function HistoryActionMenu({ anchorEl, handleMenuClose, conversationHistoryId, r
     const handleDownloadPerformanceAnalysis = async (conversationHistoryId: string) => {
         try {
             setDownloadingLabel('Preparing performance analysis...')
-            console.log(conversationHistoryId)
             const { pdf_base64, filename } = await getPerformanceAnalysis(conversationHistoryId, user.id)
             downloadBase64PDF(pdf_base64, filename)
-        } catch (err) {
+            addNotification('Download Performance Analysis', 200)
+        } catch (err: any) {
+            addNotification('Download Performance Analysis', err?.response?.status ?? 500)
             console.error('Failed to download performance analysis:', err)
         } finally {
             setDownloadingLabel(null)

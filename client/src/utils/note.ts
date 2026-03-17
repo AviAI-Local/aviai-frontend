@@ -2,6 +2,30 @@
 import type { NoteFormValues } from '../components/Interview/NotePanel'
 import type { LexicalEditorState } from '../types/common'
 
+export function convertPlainTextToLexical(text: string): LexicalEditorState {
+    const lines = text.split('\n')
+    const children = lines.map((line) => ({
+        type: 'paragraph',
+        children: line
+            ? [{ type: 'text', text: line, format: 0, detail: 0, mode: 'normal', style: '', version: 1 }]
+            : [],
+        direction: null,
+        format: '',
+        indent: 0,
+        version: 1
+    }))
+    return {
+        root: {
+            type: 'root',
+            children,
+            direction: null,
+            format: '',
+            indent: 0,
+            version: 1
+        }
+    }
+}
+
 export const TEMPLATE_EDITOR_STATE: LexicalEditorState = {
     root: {
         type: 'root',

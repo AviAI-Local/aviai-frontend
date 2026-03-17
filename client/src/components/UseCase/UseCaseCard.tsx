@@ -11,6 +11,7 @@ import { createNewSession } from '../../api/session'
 import { useSession } from '../../contexts/SessionContext'
 import CTAButton from '../common/CTAButton'
 import { useUserContext } from '../../contexts/UserContext'
+import { useApiNotification } from '../../contexts/ApiNotificationContext'
 
 type UseCaseCardProps = {
     data: UseCaseData
@@ -19,6 +20,8 @@ type UseCaseCardProps = {
 function UseCaseCard({ data }: UseCaseCardProps) {
     const navigate = useNavigate()
     const [open, setOpen] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const { addNotification } = useApiNotification()
     const { setSession, setUsecase } = useSession()
     const { user } = useUserContext()
 
@@ -28,17 +31,23 @@ function UseCaseCard({ data }: UseCaseCardProps) {
 
     const onClick = async (e: React.MouseEvent<HTMLElement>) => {
         e.stopPropagation()
-        console.log(data.id)
-        console.log(user.id)
-        const res = await createNewSession(data.id, user.id)
-        setSession({
-            id: res.session_id,
-            conversationHistory: res.conversation_history,
-            scenarioId: data.id,
-            scenarioName: res.scenario_name
-        })
-        navigate(`/interview/${res.session_id}`)
-        setUsecase(data)
+        setLoading(true)
+        try {
+            const res = await createNewSession(data.id, user.id)
+            addNotification('Create Session', 200)
+            setSession({
+                id: res.session_id,
+                conversationHistory: res.conversation_history,
+                scenarioId: data.id,
+                scenarioName: res.scenario_name
+            })
+            navigate(`/interview/${res.session_id}`)
+            setUsecase(data)
+        } catch (err: any) {
+            addNotification('Create Session', err?.response?.status ?? 500)
+        } finally {
+            setLoading(false)
+        }
     }
 
     const handleOpen = () => {
@@ -219,7 +228,7 @@ function UseCaseCard({ data }: UseCaseCardProps) {
                     />
                 </Box>
 
-                <CTAButton title={'Take An Interview'} onClick={onClick} />
+                <CTAButton title={'Take An Interview'} onClick={onClick} loading={loading} />
             </Box>
         </Box>
     )

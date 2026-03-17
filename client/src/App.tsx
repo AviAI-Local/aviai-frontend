@@ -11,6 +11,8 @@ import { routes } from './routes'
 import { NotificationProvider } from './contexts/NotificationContext'
 import { DirtyFormProvider } from './contexts/DirtyFormContext'
 import { PromptProvider } from './contexts/PromptContext'
+import { ApiNotificationProvider } from './contexts/ApiNotificationContext'
+import ApiNotificationStack from './components/common/ApiNotificationStack'
 
 function AppRoutes() {
     const routing = useRoutes(routes)
@@ -20,24 +22,27 @@ function AppRoutes() {
 function App() {
     return (
         <Router>
-            <NotificationProvider>
-                <UserProvider>
-                    <ThemeProvider theme={theme}>
-                        <DirtyFormProvider>
-                            <LoadingProvider>
-                                <GlobalFonts />
-                                <PromptProvider>
-                                    <UseCasesProvider>
-                                        <SessionProvider>
-                                            <AppRoutes />
-                                        </SessionProvider>
-                                    </UseCasesProvider>
-                                </PromptProvider>
-                            </LoadingProvider>
-                        </DirtyFormProvider>
-                    </ThemeProvider>
-                </UserProvider>
-            </NotificationProvider>
+            <ApiNotificationProvider>
+                <NotificationProvider>
+                    <UserProvider>
+                        <ThemeProvider theme={theme}>
+                            <DirtyFormProvider>
+                                <LoadingProvider>
+                                    <GlobalFonts />
+                                    <PromptProvider>
+                                        <UseCasesProvider>
+                                            <SessionProvider>
+                                                <AppRoutes />
+                                            </SessionProvider>
+                                        </UseCasesProvider>
+                                    </PromptProvider>
+                                    <ApiNotificationStack />
+                                </LoadingProvider>
+                            </DirtyFormProvider>
+                        </ThemeProvider>
+                    </UserProvider>
+                </NotificationProvider>
+            </ApiNotificationProvider>
         </Router>
     )
 }

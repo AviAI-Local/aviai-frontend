@@ -28,6 +28,7 @@ import ConfirmationDialog from '../common/ConfirmationDialog'
 import { useNotification } from '../../contexts/NotificationContext'
 import { useDirtyForm } from '../../contexts/DirtyFormContext'
 import ActionButton from '../common/ActionButton'
+import { useApiNotification } from '../../contexts/ApiNotificationContext'
 
 interface NoteViewProps {
     note: Note
@@ -35,6 +36,7 @@ interface NoteViewProps {
     setMode: Dispatch<SetStateAction<keyof typeof Mode>>
     onSaveNote: (note: Note) => void
     onDeleteNote: (noteId: string) => void
+    onCancelNote: () => void
 }
 
 const NoteSchema = Yup.object().shape({
@@ -42,7 +44,7 @@ const NoteSchema = Yup.object().shape({
     content: Yup.string().required('Content is required')
 })
 
-function NoteView({ note, mode, setMode, onSaveNote, onDeleteNote }: NoteViewProps) {
+function NoteView({ note, mode, setMode, onSaveNote, onDeleteNote, onCancelNote }: NoteViewProps) {
     const isEdit = mode === Mode.Edit
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
@@ -50,6 +52,7 @@ function NoteView({ note, mode, setMode, onSaveNote, onDeleteNote }: NoteViewPro
     const { user } = useUserContext()
     const { setNotify } = useNotification()
     const { isDirty, setIsDirty } = useDirtyForm()
+    const { addNotification } = useApiNotification()
     if (!user) {
         throw new Error('User not found in context')
     }
@@ -68,17 +71,19 @@ function NoteView({ note, mode, setMode, onSaveNote, onDeleteNote }: NoteViewPro
         if (!note.id) return
         try {
             setLoading(true)
-            const deletedNote = await deleteNote(note.id)
-            if (!deletedNote) throw new Error('Note not found')
+            await deleteNote(note.id)
+            addNotification('Delete Note', 200)
             onDeleteNote(note.id)
-        } catch (err) {
+        } catch (err: any) {
+            const status = err?.response?.status ?? 500
+            addNotification('Delete Note', status)
             setNotify({ message: 'Failed to delete note', type: 'error', open: true })
             console.error('Failed to delete note', err)
         } finally {
             setDeleteDialogOpen(false)
             setLoading(false)
         }
-    }, [])
+    }, [note.id])
 
     useEffect(() => {
         if (!note.id) {
@@ -215,7 +220,7 @@ function NoteView({ note, mode, setMode, onSaveNote, onDeleteNote }: NoteViewPro
                                             if (isDirty) {
                                                 setCancelDialogOpen(true)
                                             } else {
-                                                setMode(Mode.View)
+                                                onCancelNote()
                                             }
                                         }}
                                     >
@@ -242,9 +247,9 @@ function NoteView({ note, mode, setMode, onSaveNote, onDeleteNote }: NoteViewPro
                 open={cancelDialogOpen}
                 onClose={() => setCancelDialogOpen(false)}
                 onConfirm={() => {
-                    setMode(Mode.View)
                     setIsDirty(false)
                     setCancelDialogOpen(false)
+                    onCancelNote()
                 }}
             />
         </Box>

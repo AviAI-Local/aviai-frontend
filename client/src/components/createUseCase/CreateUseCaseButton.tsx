@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography'
 import PlusIcon from '../UseCase/PlusIcon'
 import { Box, Fade } from '@mui/material'
 import { useEffect, useRef, useState } from 'react'
+import { useApiNotification } from '../../contexts/ApiNotificationContext'
 import HighlightOffOutlinedIcon from '@mui/icons-material/HighlightOffOutlined'
 import type { UseCaseFormValues } from '../../types/usecase'
 import type { FormikProps, FormikValues } from 'formik'
@@ -30,6 +31,7 @@ function CreateUseCaseButton() {
     const [filteredTemplates, setFilteredTemplates] = useState<PromptTemplate[]>([])
     const [selectedTemplate, setSelectedTemplate] = useState<PromptTemplate | null>(null)
     const formikRef = useRef<FormikProps<UseCaseFormValues>>(null)
+    const { addNotification } = useApiNotification()
     const { setLoading } = useLoading()
     const { handleUpdateUseCases } = useUseCasesContext()
     const { prompts } = usePromptContext()
@@ -115,9 +117,11 @@ function CreateUseCaseButton() {
                 userId
             )
             console.log(res)
+            addNotification('Create Scenario', 200)
             handleUpdateUseCases()
             handleClose()
         } catch (error: any) {
+            addNotification('Create Scenario', error?.response?.status ?? 500)
             console.log(error.response?.data?.detail)
         } finally {
             setSubmitting(false)

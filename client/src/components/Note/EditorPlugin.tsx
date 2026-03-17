@@ -34,19 +34,6 @@ export default function EditorPlugin({ jsonContent }: EditorPluginProps) {
           headingNode.append($createTextNode(label));
           root.append(headingNode);
         };
-
-        addSection('I. Aircraft make/ model');
-        root.append($createParagraphNode());
-
-        addSection('II. Date');
-        root.append($createParagraphNode());
-        root.append($createParagraphNode());
-
-        addSection('III. Weather Conditions at the Time of Incident');
-        root.append($createParagraphNode());
-
-        addSection('IV. Details of Observed events');
-        root.append($createParagraphNode());
       }
     });
   }, [editor, jsonContent, lastLoadedContent]);
