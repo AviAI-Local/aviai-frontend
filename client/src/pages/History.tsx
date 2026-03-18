@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import HistoryTable from '../components/History/HistoryTable'
 import PageLayout from '../components/layout/PageLayout'
 import { getUserSessions } from '../api/session'
-import { useUserContext } from '../contexts/UserContext'
 import { useUseCasesContext } from '../contexts/UseCasesContext'
 import type { Session } from '../types/session'
 import { useLoading } from '../contexts/LoadingContext'
@@ -10,9 +9,8 @@ import FullPageLoader from '../components/common/FullPageLoader'
 
 function History() {
     const [sessions, setSessions] = useState<Session[]>([])
-    const [usecaseMap, setUsecaseMap] = useState<Record<string, string>>({})
+    const [usecaseMap, setUsecaseMap] = useState<Record<string, { name: string; category: string }>>({})
     const { useCases } = useUseCasesContext()
-    const { user: { id = '' } = {} } = useUserContext()
     const { loading, setLoading } = useLoading()
 
    useEffect(() => {
@@ -35,7 +33,6 @@ function History() {
             try {
                 setLoading(true)
                 const sessionData = await getUserSessions()
-                // console.log(sessionData)
 
                 const sortedSessions = sessionData.sort((a, b) => {
                     const dateA = new Date(a.createdAt ?? 0).getTime()
@@ -43,13 +40,12 @@ function History() {
                     return dateB - dateA
                 })
 
-                const map: Record<string, string> = {}
+                const map: Record<string, { name: string; category: string }> = {}
                 useCases.forEach((uc) => {
-                    map[uc.id] = uc.name
+                    map[uc.id] = { name: uc.name, category: uc.category }
                 })
 
                 setUsecaseMap(map)
-                console.log(usecaseMap)
                 setSessions(sortedSessions)
             } catch (err) {
                 console.error('Error fetching history', err)

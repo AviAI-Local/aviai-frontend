@@ -22,7 +22,7 @@ const tableColumns = ['USE CASE NAME', 'INTERVIEW ID', 'DATE', 'TIME', 'DURATION
 
 export interface HistoryTableProps {
     sessions: Session[]
-    useCaseMap: Record<string, string>
+    useCaseMap: Record<string, { name: string; category: string }>
 }
 
 export default function HistoryTable({ sessions, useCaseMap }: HistoryTableProps) {
@@ -112,6 +112,8 @@ export default function HistoryTable({ sessions, useCaseMap }: HistoryTableProps
                                                     conversationHistoryId={session.conversationHistory.id}
                                                     recording={recording}
                                                     setDownloadingLabel={setDownloadingLabel}
+                                                    scenarioMap={useCaseMap}
+                                                    scenarioId={session.scenarioId}
                                                 />
                                             )}
                                         </>

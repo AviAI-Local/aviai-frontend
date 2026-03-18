@@ -12,6 +12,8 @@ export interface HistoryActionMenuProps {
     conversationHistoryId: string
     recording: string | null
     setDownloadingLabel: (label: string | null) => void
+    scenarioMap: Record<string, { name: string; category: string }>
+    scenarioId: string
 }
 
 const actions = [
@@ -42,7 +44,7 @@ const actions = [
     }
 ]
 
-function HistoryActionMenu({ anchorEl, handleMenuClose, conversationHistoryId, recording, setDownloadingLabel }: HistoryActionMenuProps) {
+function HistoryActionMenu({ anchorEl, handleMenuClose, conversationHistoryId, recording, setDownloadingLabel, scenarioMap, scenarioId }: HistoryActionMenuProps) {
     const { user } = useUserContext()
     if (!user) return
     const handleDownloadTranscript = async (conversationHistoryId: string) => {
@@ -130,6 +132,7 @@ function HistoryActionMenu({ anchorEl, handleMenuClose, conversationHistoryId, r
             actions
                 .filter((action) => action.key !== 'record' || recording)
                 .filter((action) => action.key !== 'emotion')
+                .filter((action) => action.key !== 'performance' || scenarioMap[scenarioId]?.category === 'Aviation')
                 .map((action) => {
                     const handleClick = async () => {
                         handleMenuClose()
@@ -177,7 +180,7 @@ function HistoryActionMenu({ anchorEl, handleMenuClose, conversationHistoryId, r
                         </MenuItem>
                     )
                 }),
-        [conversationHistoryId, handleMenuClose, recording]
+        [conversationHistoryId, handleMenuClose, recording, scenarioId, scenarioMap]
     )
 
     return (
