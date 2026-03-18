@@ -21,7 +21,7 @@ function UseCaseList() {
     }
 
     return (
-        <PageLayout headerProps={{ title: 'Use Cases', pageType: 'Use Cases', total: useCases.length }} noScroll={true}>
+        <PageLayout headerProps={{ title: 'Scenario', pageType: 'Scenarios', total: useCases.length }} noScroll={true}>
             <Box
                 sx={{
                     height: '100vh',
