@@ -98,7 +98,7 @@ function NotificationCard({ notification, onDismiss }: { notification: ApiNotifi
                         {notification.status}
                     </Typography>
                     <Typography sx={{ fontSize: 11, color: statusText }}>
-                        {statusLabel(notification.status)}
+                        {notification.message ?? statusLabel(notification.status)}
                     </Typography>
                 </Box>
 

@@ -4,12 +4,13 @@ export interface ApiNotification {
     id: string
     label: string
     status: number
+    message?: string
     timestamp: Date
 }
 
 interface ApiNotificationContextValue {
     notifications: ApiNotification[]
-    addNotification: (label: string, status: number) => void
+    addNotification: (label: string, status: number, message?: string) => void
     dismissNotification: (id: string) => void
 }
 
@@ -20,9 +21,9 @@ const AUTO_DISMISS_MS = 5000
 export function ApiNotificationProvider({ children }: { children: ReactNode }) {
     const [notifications, setNotifications] = useState<ApiNotification[]>([])
 
-    const addNotification = (label: string, status: number) => {
+    const addNotification = (label: string, status: number, message?: string) => {
         const id = `${Date.now()}-${Math.random()}`
-        setNotifications((prev) => [...prev.slice(-4), { id, label, status, timestamp: new Date() }])
+        setNotifications((prev) => [...prev.slice(-4), { id, label, status, message, timestamp: new Date() }])
         setTimeout(() => {
             setNotifications((prev) => prev.filter((n) => n.id !== id))
         }, AUTO_DISMISS_MS)

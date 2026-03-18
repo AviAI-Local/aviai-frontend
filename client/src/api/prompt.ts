@@ -46,11 +46,5 @@ export const createPrompt = async (
         }
     )
 
-    try {
-        if (res.status === 200) {
-            return res
-        }
-    } catch (err) {
-        return err
-    }
+    return res.data
 }

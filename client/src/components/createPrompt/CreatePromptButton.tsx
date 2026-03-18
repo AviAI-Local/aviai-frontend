@@ -14,6 +14,7 @@ import CreatePromptForm from './CreatePromptForm'
 import type { PromptFormValues } from '../../types/prompt'
 import { createPrompt } from '../../api/prompt'
 import { usePromptContext } from '../../contexts/PromptContext'
+import { useApiNotification } from '../../contexts/ApiNotificationContext'
 
 function CreatePromptButton() {
     const [open, setOpen] = useState(false)
@@ -22,6 +23,7 @@ function CreatePromptButton() {
     const { setLoading } = useLoading()
     const { user } = useUserContext()
     const { handleUpdatePrompts } = usePromptContext()
+    const { addNotification } = useApiNotification()
 
     if (!user) {
         throw new Error('User is not authenticated')
@@ -42,18 +44,19 @@ function CreatePromptButton() {
         const userId = user.id
         console.log('Prompt values:', values)
         try {
-            // TODO: Add API call to create prompt
-            const res = await createPrompt(
+            await createPrompt(
                 values.template_name,
                 values.category,
                 values.content,
                 userId
             )
-            console.log(res)
+            addNotification('Create Prompt', 200)
             handleUpdatePrompts()
             handleClose()
         } catch (error: any) {
-            console.error('Failed to create prompt:', error)
+            const status = error?.response?.status ?? 500
+            const message = status === 500 ? 'Prompt already exists' : undefined
+            addNotification('Create Prompt', status, message)
         } finally {
             setSubmitting(false)
             setLoading(false)
