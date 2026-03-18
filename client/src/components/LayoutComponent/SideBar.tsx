@@ -44,7 +44,7 @@ function SideBar({ onNavigate }: { onNavigate: (path: string) => void }) {
                     /> */}
                     <SidebarItem
                         Icon={BriefcaseIcon}
-                        label='Use Case'
+                        label='Scenario'
                         selected={isSelected('/scenarios')}
                         onClick={() => onNavigate('/scenarios')}
                     />

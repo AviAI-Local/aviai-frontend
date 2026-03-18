@@ -8,6 +8,7 @@ import { useUserContext } from '../../contexts/UserContext'
 import { updateAccountFields } from '../../api/auth'
 import { majorOptions } from '../../constants/texts'
 import { useState } from 'react'
+import { useApiNotification } from '../../contexts/ApiNotificationContext'
 
 interface ProfileFormData {
     firstName: string
@@ -33,29 +34,23 @@ const validationSchema = Yup.object({
 function ProfileForm({ initialData, onSave, onCancel }: ProfileFormProps) {
     const { user, refetchUser } = useUserContext()
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const { addNotification } = useApiNotification()
 
     const handleSubmit = async (values: ProfileFormData) => {
         if (!user) return
 
         setIsSubmitting(true)
         try {
-            // Add a small delay to show loading state
-            await new Promise(resolve => setTimeout(resolve, 1000))
-            
             await updateAccountFields(user.id, {
                 user_name: `${values.firstName} ${values.lastName}`.trim(),
                 major: values.major
             })
-            
-            // Refresh user data
+            addNotification('Save Profile', 200)
             await refetchUser()
-            
-            // Call onSave to switch back to view mode
             onSave()
-        } catch (error) {
+        } catch (error: any) {
+            addNotification('Save Profile', error?.response?.status ?? 500)
             console.error('Failed to update profile:', error)
-            // Still call onSave to return to view mode even if there's an error
-            onSave()
         } finally {
             setIsSubmitting(false)
         }
@@ -151,7 +146,7 @@ function ProfileForm({ initialData, onSave, onCancel }: ProfileFormProps) {
                         </Box>
 
                         {/* Action Buttons */}
-                        <Box sx={{ display: 'flex', gap: 2, marginTop: 2, justifyContent: 'flex-end' }}>
+                        <Box sx={{ display: 'flex', gap: 2, marginTop: 2, justifyContent: 'flex-end', alignItems: 'center' }}>
                             <ActionButton
                                 type="submit"
                                 variant="contained"

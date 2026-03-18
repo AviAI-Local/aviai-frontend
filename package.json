@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@lexical/list": "^0.34.0"
+    "@lexical/list": "^0.34.0",
+    "jszip": "^3.10.1"
   }
 }

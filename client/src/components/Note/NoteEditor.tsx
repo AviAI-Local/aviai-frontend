@@ -47,7 +47,8 @@ export default function NoteEditor({ content, onChange }: NoteEditorProps) {
                 contentEditable={
                     <ContentEditable
                         style={{
-                            height: '80%',
+                            minHeight: '400px',
+                            height: '100%',
                             padding: 8,
                             overflow: 'auto',
                             outline: 'none'

@@ -9,12 +9,13 @@ import FullPageLoader from '../common/FullPageLoader'
 import { useUserContext } from '../../contexts/UserContext'
 import EmailFormInput from './EmailFormInput'
 import PasswordFormInput from './PasswordFormInput'
+import { useApiNotification } from '../../contexts/ApiNotificationContext'
 
 function LoginForm({ onSwitchMode }: { onSwitchMode?: () => void }) {
     const { refetchUser } = useUserContext()
-
     const { loading, setLoading } = useLoading()
     const navigate = useNavigate()
+    const { addNotification } = useApiNotification()
 
     const validationSchema = Yup.object().shape({
         email: Yup.string()
@@ -29,10 +30,13 @@ function LoginForm({ onSwitchMode }: { onSwitchMode?: () => void }) {
         setLoading(true)
         try {
             await login(values.email, values.password)
+            addNotification('Sign in', 200)
             await refetchUser()
             navigate('/scenarios')
         } catch (error: any) {
-            if (error.response?.status === 400 || error.response?.status === 401) {
+            const status = error.response?.status ?? 500
+            addNotification('Sign in', status)
+            if (status === 400 || status === 401) {
                 const message = error.response.data.detail
                 if (message.includes('email')) {
                     setErrors({ email: message })
@@ -101,10 +105,6 @@ function LoginForm({ onSwitchMode }: { onSwitchMode?: () => void }) {
                             <Stack spacing={2}>
                                 <EmailFormInput handleChange={handleChange} errors={errors} touched={touched} />
                                 <PasswordFormInput handleChange={handleChange} errors={errors} touched={touched} />
-
-                                {/* <Link href='#' underline='none' textAlign='end' sx={{ fontSize: '14px' }}>
-                                    Forgot password?
-                                </Link> */}
                                 <Button
                                     fullWidth
                                     sx={{

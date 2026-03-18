@@ -57,7 +57,7 @@ function Notes() {
             title: 'Untitled',
             content: null
         }
-        setNotes([newNote, ...notes])
+        setNotes((prev) => [newNote, ...prev])
         setSelectedNote(newNote)
         setMode(Mode.Edit)
     }, [])
@@ -72,6 +72,18 @@ function Notes() {
         fetchNotes()
         setNotify({ message: 'Note deleted successfully', type: 'success', open: true })
     }, [])
+
+    const handleCancelNote = useCallback(() => {
+        if (selectedNote && !selectedNote.id) {
+            // Remove the unsaved new note and restore previous selection
+            setNotes((prev) => {
+                const remaining = prev.filter((n) => n.id)
+                setSelectedNote(remaining[0] || null)
+                return remaining
+            })
+        }
+        setMode(Mode.View)
+    }, [selectedNote])
 
     return (
         <PageLayout headerProps={{ title: 'Notes', total: notes.length, pageType: 'Notes' }}>
@@ -90,6 +102,7 @@ function Notes() {
                         setMode={setMode}
                         onSaveNote={handleSaveNote}
                         onDeleteNote={handleDeleteNote}
+                        onCancelNote={handleCancelNote}
                     />
                 )}
             </Box>

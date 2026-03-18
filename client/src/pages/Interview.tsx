@@ -24,10 +24,10 @@ import { useNavigate } from 'react-router-dom'
 import FullPageLoader from '../components/common/FullPageLoader'
 import { useLoading } from '../contexts/LoadingContext'
 import { useUserContext } from '../contexts/UserContext'
-import NotePanel, { type NoteFormValues } from '../components/Interview/NotePanel'
+import NotePanel from '../components/Interview/NotePanel'
 import { createNote } from '../api/note'
-import { convertNoteToLexical } from '../utils/note'
 import { formatDate, formatTime, formatTimeToHHMM } from '../utils/format'
+import { convertPlainTextToLexical } from '../utils/note'
 
 function Interview() {
     const { config } = useConfig()
@@ -67,12 +67,7 @@ function Inner() {
 
     const remoteSpeaker = useMemo(() => tracks.find((t) => t.participant instanceof RemoteParticipant), [tracks])
 
-    const [noteValues, setNoteValues] = useState<NoteFormValues>({
-        aircraft: '',
-        date: '',
-        weather: '',
-        details: ''
-    })
+    const [noteText, setNoteText] = useState('')
 
     useEffect(() => {
         if (session?.id && session.usecaseId && roomState === ConnectionState.Disconnected) {
@@ -163,23 +158,19 @@ function Inner() {
     const leaveRoom = async () => {
         setLoading(true)
 
-        const hasValues = Object.values(noteValues).some((value) => value.trim() !== '')
-        
         if (option == "video") {
             stopVideoRecording()
             setOption(null)
         }
-        
-        if (hasValues) {
-            const lexicalJSON = convertNoteToLexical(noteValues)
+
+        if (noteText.trim() !== '') {
             try {
                 await createNote(
                     `Interview Note ${formatDate(new Date().toISOString())} ${formatTimeToHHMM(new Date().toISOString())}`,
-                    lexicalJSON,
+                    convertPlainTextToLexical(noteText),
                     user.id,
                     session?.id
                 )
-
             } catch (error) {
                 console.error('Failed to save note:', error)
             }
@@ -286,7 +277,7 @@ function Inner() {
 
                     {showChat && <ChatPanel />}
                     {showTranscript && <TranscriptPanel />}
-                    {showNote && <NotePanel noteValues={noteValues} setNoteValues={setNoteValues} />}
+                    {showNote && <NotePanel noteText={noteText} setNoteText={setNoteText} />}
                 </Box>
             </Box>
         </Fade>
