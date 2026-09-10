@@ -79,6 +79,8 @@ export const SessionProviderV2 = ({ children }: SessionProviderV2Props) => {
   const processorRef = useRef<ScriptProcessorNode | null>(null);
   const speakingRef = useRef(false);
   const streamRef = useRef<MediaStream | null>(null);
+  // Text is held here until its audio finishes playing, then revealed via setLatestResponse
+  const pendingResponseRef = useRef<string | null>(null);
 
   // Send JSON message via WebSocket
   const sendJson = useCallback((message: unknown) => {
@@ -147,7 +149,7 @@ export const SessionProviderV2 = ({ children }: SessionProviderV2Props) => {
     if (typeof event.data === "string") {
       const msg = JSON.parse(event.data);
       if (msg.type === "assistant_text") {
-        setLatestResponse(msg.content);
+        pendingResponseRef.current = msg.content;
         setVoiceInstructions(msg.voice_instructions || "neutral");
         setAvatarInstructions(msg.avatar_instructions || "neutral");
       }
@@ -162,6 +164,10 @@ export const SessionProviderV2 = ({ children }: SessionProviderV2Props) => {
     // Binary audio data
     playAudio(event.data, () => {
       sendJson({ type: "audio_playback_complete" });
+      if (pendingResponseRef.current !== null) {
+        setLatestResponse(pendingResponseRef.current);
+        pendingResponseRef.current = null;
+      }
     });
   }, [playAudio, sendJson]);
 
