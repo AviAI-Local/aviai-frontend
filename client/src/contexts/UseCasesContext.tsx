@@ -10,6 +10,7 @@ const UseCasesContext = createContext<UseCaseContext | undefined>(undefined)
 function UseCasesProvider({ children }: { children: ReactNode }) {
     const [useCases, setUseCases] = useState<UseCaseData[]>([])
     const [newUseCase, setNewUseCase] = useState(false)
+    const [error, setError] = useState<string | null>(null)
     const { setLoading } = useLoading()
     const { user } = useUserContext()
     const location = useLocation()
@@ -59,6 +60,7 @@ function UseCasesProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         async function fetchData() {
+            setError(null)
             try {
                 const res = await getUseCases()
                 const data = res.map((item: any) => ({
@@ -73,7 +75,9 @@ function UseCasesProvider({ children }: { children: ReactNode }) {
                 }))
                 setUseCases(data)
             } catch (err) {
-                console.log(err)
+                console.error('Failed to load use cases:', err)
+                setUseCases([])
+                setError('Failed to load scenarios. Please try again.')
             } finally {
                 setLoading(false)
             }
@@ -87,7 +91,8 @@ function UseCasesProvider({ children }: { children: ReactNode }) {
         setUseCases,
         handleUpdateUseCases,
         sortUseCase,
-        searchUseCase
+        searchUseCase,
+        error
     }
 
     return <UseCasesContext.Provider value={useCaseList}>{children}</UseCasesContext.Provider>
