@@ -4,6 +4,7 @@ import JSZip from 'jszip'
 import { useCallback } from 'react'
 import { getConversationPDF, getEmotionAnalysis, getPerformanceAnalysis } from '../../api/session'
 import { downloadBase64PDF } from '../../utils/interview'
+import { API_ORIGIN } from '../../api/axios'
 import { useUserContext } from '../../contexts/UserContext'
 import { useApiNotification } from '../../contexts/ApiNotificationContext'
 
@@ -75,7 +76,7 @@ function HistoryActionMenu({ anchorEl, handleMenuClose, conversationHistoryId, r
 
     const handleOpenRecording = () => {
         if (recording) {
-            window.open(`http://localhost:8000/recordings/${recording}`, '_blank', 'noopener,noreferrer')
+            window.open(`${API_ORIGIN}/recordings/${recording}`, '_blank', 'noopener,noreferrer')
         }
     }
 

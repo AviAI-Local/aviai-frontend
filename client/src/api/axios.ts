@@ -23,6 +23,11 @@ export const serverAPI = axios.create({
     }
 })
 
+// Backend origin with no path (e.g. "https://aviai-backend-final.onrender.com"),
+// for endpoints mounted outside the /api/v1 prefix (static file serving,
+// WebSocket routes) that still need to target the real backend host.
+export const API_ORIGIN = API_BASE_URL ? new URL(API_BASE_URL).origin : ''
+
 serverAPI.interceptors.request.use((config) => {
     const token = Cookies.get('token')
     if (token) {

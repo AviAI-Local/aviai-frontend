@@ -2,9 +2,9 @@ import { createContext, useContext, useRef, useState, useCallback, type ReactNod
 import RecordRTC from "recordrtc";
 import { uploadVideo } from "../api/session";
 import { useSession as useSessionV1 } from '../contexts/SessionContext'
+import { API_ORIGIN } from "../api/axios";
 
-const API_BASE_URL = "http://localhost:8000";
-const WS_BASE_URL = "ws://localhost:8000";
+const WS_BASE_URL = API_ORIGIN.replace(/^http/, "ws");
 const TTS_SAMPLE_RATE = 24000;
 const MIC_SAMPLE_RATE = 16000;
 
