@@ -13,7 +13,8 @@ export default defineConfig({
       '127.0.0.1',
       '.ngrok-free.app',
       '.ngrok.io',
-      '.ngrok.com'
+      '.ngrok.com',
+      '.onrender.com'
     ]
   },
   css: {
