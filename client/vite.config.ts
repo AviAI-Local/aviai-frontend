@@ -6,7 +6,7 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 3000,
+    port: Number(process.env.PORT) || 3000,
     host: '0.0.0.0',
     allowedHosts: [
       'localhost',
