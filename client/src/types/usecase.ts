@@ -18,6 +18,7 @@ export type UseCaseContext = {
     handleUpdateUseCases: () => void // adjust type if needed
     sortUseCase: (name: boolean, date: boolean) => Promise<void>
     searchUseCase: (name: string) => Promise<void>
+    error: string | null
 }
 
 export type UseCaseFormValues = {

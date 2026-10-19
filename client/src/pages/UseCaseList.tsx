@@ -10,15 +10,18 @@ import CreateUseCaseButton from '../components/createUseCase/CreateUseCaseButton
 import { useEffect } from 'react'
 import CreatePromptButton from '../components/createPrompt/CreatePromptButton'
 import { usePromptContext } from '../contexts/PromptContext'
+import { Role } from '../types/common'
 
 function UseCaseList() {
-    const { useCases } = useUseCasesContext()
+    const { useCases, error } = useUseCasesContext()
     const { prompts } = usePromptContext()
     const { user } = useUserContext()
 
     if (!user) {
         throw new Error('User is not authenticated')
     }
+
+    const isAdmin = user.role === Role.Admin
 
     return (
         <PageLayout headerProps={{ title: 'Scenario', pageType: 'Scenarios', total: useCases.length }} noScroll={true}>
@@ -33,7 +36,7 @@ function UseCaseList() {
                 px={2}
             >
                 <Box display='flex' gap={2} alignItems='center'>
-                    <Typography variant='h5'>{user.role == 'Student' ? 'Student' : 'Admin'} Board</Typography>
+                    <Typography variant='h5'>{isAdmin ? 'Admin' : 'Student'} Board</Typography>
                     <Divider
                         orientation='vertical'
                         variant='middle'
@@ -44,23 +47,31 @@ function UseCaseList() {
                         }}
                     />
 
-                    {(user.role === 'Admin' && prompts.length > 0) && <CreateUseCaseButton />}
-                    {user.role === 'Admin' && <CreatePromptButton />}
+                    {(isAdmin && prompts.length > 0) && <CreateUseCaseButton />}
+                    {isAdmin && <CreatePromptButton />}
                     {/* <FilterIcon /> */}
                     <SortIcon />
                 </Box>
 
                 <BoardLayout>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            gap: 2,
-                            padding: 3
-                        }}
-                    >
-                        {useCases && useCases.map((useCase) => <UseCaseCard key={useCase.id} data={useCase} />)}
-                    </Box>
+                    {error ? (
+                        <Box display='flex' alignItems='center' justifyContent='center' width='100%' p={4}>
+                            <Typography variant='body1' color='error'>
+                                {error}
+                            </Typography>
+                        </Box>
+                    ) : (
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                gap: 2,
+                                padding: 3
+                            }}
+                        >
+                            {useCases && useCases.map((useCase) => <UseCaseCard key={useCase.id} data={useCase} />)}
+                        </Box>
+                    )}
                 </BoardLayout>
             </Box>
         </PageLayout>
