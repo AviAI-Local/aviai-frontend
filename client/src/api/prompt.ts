@@ -3,7 +3,7 @@ import { mapPrompt } from "../utils/mapping"
 import { serverAPI } from "./axios"
 
 export const getPrompts = async (): Promise<PromptTemplate[]> => {
-    const res = await serverAPI.get('/prompt/')
+    const res = await serverAPI.get('/prompt')
     if (res.status === 200) {
         return res.data
     }

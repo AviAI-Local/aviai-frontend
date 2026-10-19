@@ -3,7 +3,7 @@ import { mapUseCase } from '../utils/mapping'
 import { serverAPI } from './axios'
 
 export const getUseCases = async () => {
-    const res = await serverAPI.get(`/scenario/`)
+    const res = await serverAPI.get(`/scenario`)
 
     try {
         if (res.status === 200) {
@@ -70,7 +70,7 @@ export const createUseCase = async (
     createdBy: string,
 ) => {
     const res = await serverAPI.post(
-        '/scenario/',
+        '/scenario',
         {
             scenario_name: name,
             prompt_id: promptId,

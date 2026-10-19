@@ -57,7 +57,7 @@ export const uploadVideo = async (sessionID: string, file: File) => {
 
 export const getUserSessions = async () => {
     try {
-        const res = await serverAPI.get(`/session/`)
+        const res = await serverAPI.get(`/session`)
 
         if (res.status === 200 && Array.isArray(res.data)) {
             return mapSessions(res.data)
